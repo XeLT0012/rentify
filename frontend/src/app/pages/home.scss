@@ -1,0 +1,63 @@
+.hero {
+  text-align: center;
+  padding: 3rem;
+  background: linear-gradient(to right, #4facfe, #00f2fe);
+  color: white;
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    background-color: white;
+    color: #00f2fe;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+}
+
+.featured {
+  padding: 2rem;
+
+  h2 {
+    margin-bottom: 1rem;
+  }
+
+  .listing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+
+    .card {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      border-radius: 8px;
+      background: #fff;
+      text-align: center;
+
+      img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 5px;
+      }
+
+      h3 {
+        margin: 0.5rem 0;
+      }
+
+      p {
+        color: #333;
+      }
+    }
+  }
+}

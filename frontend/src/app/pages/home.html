@@ -1,0 +1,18 @@
+<!-- Hero Section -->
+<section class="hero">
+  <h1>Welcome to Rentify</h1>
+  <p>Rent anything, anytime, from people near you.</p>
+  <button routerLink="/search">Browse Listings</button>
+</section>
+
+<!-- Featured Listings -->
+<section class="featured">
+  <h2>Featured Listings</h2>
+  <div class="listing-grid">
+    <div *ngFor="let item of featuredListings" class="card">
+      <img [src]="item.imageUrl" alt="{{ item.title }}" />
+      <h3>{{ item.title }}</h3>
+      <p>₹{{ item.price }} / day</p>
+    </div>
+  </div>
+</section>
