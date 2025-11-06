@@ -1,0 +1,13 @@
+<section class="auth-container">
+  <h2>Login to Rentify</h2>
+  <form [formGroup]="form" (ngSubmit)="login()">
+    <label>Email</label>
+    <input type="email" formControlName="email" placeholder="Enter your email" />
+
+    <label>Password</label>
+    <input type="password" formControlName="password" placeholder="Enter your password" />
+
+    <button type="submit" [disabled]="form.invalid">Login</button>
+    <p>Don't have an account? <a routerLink="/register">Register here</a></p>
+  </form>
+</section>

@@ -1,0 +1,8 @@
+@use './login.scss' as *; // Reuse styles from login
+
+.auth-container select {
+  padding: 0.5rem;
+  margin-top: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}

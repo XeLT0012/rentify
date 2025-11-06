@@ -1,0 +1,22 @@
+<section class="auth-container">
+  <h2>Create an Account</h2>
+  <form [formGroup]="form" (ngSubmit)="register()">
+    <label>Name</label>
+    <input type="text" formControlName="name" placeholder="Your full name" />
+
+    <label>Email</label>
+    <input type="email" formControlName="email" placeholder="Your email" />
+
+    <label>Password</label>
+    <input type="password" formControlName="password" placeholder="Choose a password" />
+
+    <label>Role</label>
+    <select formControlName="role">
+      <option value="user">User</option>
+      <option value="admin">Admin</option>
+    </select>
+
+    <button type="submit" [disabled]="form.invalid">Register</button>
+    <p>Already have an account? <a routerLink="/login">Login here</a></p>
+  </form>
+</section>

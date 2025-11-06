@@ -61,3 +61,26 @@
     }
   }
 }
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+
+  button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    background-color: white;
+    color: #00f2fe;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    &:hover {
+      background-color: #e0f7ff;
+    }
+  }
+}
+
