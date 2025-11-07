@@ -11,6 +11,10 @@ app.use(express.json());
 const listingRoutes = require('./routes/listingRoutes');
 app.use('/api/listings', listingRoutes);
 
+const userRoutes = require('./routes/userRoutes');
+app.use('/api/users', userRoutes);
+
+
 // ✅ Optional root route for testing
 app.get('/', (req, res) => {
   res.send('Backend is running!');
