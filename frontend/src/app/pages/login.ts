@@ -36,9 +36,11 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: res => {
           this.auth.login(res.token, res.role);
+          alert('Login successful!');
           this.router.navigate([res.role === 'admin' ? '/admin' : '/dashboard']);
         },
         error: err => {
+          alert('Login failed. Please check your credentials.');
           console.error('Login failed:', err);
         }
       });

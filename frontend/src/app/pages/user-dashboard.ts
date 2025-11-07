@@ -16,6 +16,7 @@ constructor(private auth: AuthService) {}
 
 logout() {
   this.auth.logout();
+  alert('You have been logged out.');
 }
 
 }

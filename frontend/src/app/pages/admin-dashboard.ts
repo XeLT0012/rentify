@@ -14,5 +14,6 @@ export class AdminDashboardComponent {
 
 logout() {
   this.auth.logout();
+  alert('You have been logged out.');
 }
 }

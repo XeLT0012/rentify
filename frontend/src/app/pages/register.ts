@@ -30,8 +30,12 @@ export class RegisterComponent implements OnInit {
 
     this.http.post('http://localhost:5000/api/users/register', this.form.value)
       .subscribe({
-        next: () => this.router.navigate(['/login']),
+        next: () => {
+        alert('Registration successful! You can now log in.');
+        this.router.navigate(['/login']);
+      },
         error: err => {
+          alert('Registration failed. Email may already be in use.');
           console.error('Registration failed:', err);
           // Optionally show error to user
         }
