@@ -1,5 +1,14 @@
-<section class="dashboard">
-  <h2>Admin Panel</h2>
-  <p>Manage listings, users, and platform settings.</p>
-  <button (click)="logout()">Logout</button>
-</section>
+<div class="sidebar">
+  <h3>Admin Panel</h3>
+  <ul>
+    <li><a routerLink="/">Home</a></li>
+    <li><a routerLink="/admin/listings">Manage Listings</a></li>
+    <li><a routerLink="/profile">Profile</a></li>
+    <li><a (click)="logout()">Logout</a></li>
+  </ul>
+</div>
+
+<div class="dashboard-content">
+  <h2>Welcome, Admin!</h2>
+  <p>Use the sidebar to manage platform content.</p>
+</div>

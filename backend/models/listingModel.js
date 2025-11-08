@@ -5,9 +5,7 @@ const listingSchema = new mongoose.Schema({
   description: String,
   price: { type: Number, required: true },
   imageUrl: String,
-  category: String,
-  isFeatured: { type: Boolean, default: false },
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Listing', listingSchema);

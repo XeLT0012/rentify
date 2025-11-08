@@ -1,5 +1,15 @@
-<section class="dashboard">
-  <h2>Welcome to Your Dashboard</h2>
-  <p>You can view and manage your rentals here.</p>
-  <button (click)="logout()">Logout</button>
-</section>
+<div class="sidebar">
+  <h3>User Dashboard</h3>
+  <ul>
+    <li><a routerLink="/">Home</a></li>
+    <li><a routerLink="/listings">My Listings</a></li>
+    <li><a routerLink="/listings/new">Add Listing</a></li>
+    <li><a routerLink="/profile">Profile</a></li>
+    <li><a (click)="logout()">Logout</a></li>
+  </ul>
+</div>
+
+<div class="dashboard-content">
+  <h2>Welcome, User!</h2>
+  <p>Use the sidebar to manage your listings and profile.</p>
+</div>

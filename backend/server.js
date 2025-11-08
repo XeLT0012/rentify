@@ -8,12 +8,11 @@ app.use(cors());
 app.use(express.json());
 
 // ✅ Import and use the route
-const listingRoutes = require('./routes/listingRoutes');
-app.use('/api/listings', listingRoutes);
-
 const userRoutes = require('./routes/userRoutes');
 app.use('/api/users', userRoutes);
 
+const listingRoutes = require('./routes/listingRoutes');
+app.use('/api/listings', listingRoutes);
 
 // ✅ Optional root route for testing
 app.get('/', (req, res) => {

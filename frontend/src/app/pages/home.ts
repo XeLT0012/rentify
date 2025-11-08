@@ -16,7 +16,7 @@ export class HomeComponent {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.http.get<any[]>('http://localhost:5000/api/listings/featured')
+    this.http.get<any[]>('http://localhost:5000/api/listings')
       .subscribe(data => this.featuredListings = data);
   }
 }

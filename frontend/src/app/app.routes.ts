@@ -4,6 +4,7 @@ import { LoginComponent } from './pages/login';
 import { RegisterComponent } from './pages/register';
 import { UserDashboardComponent } from './pages/user-dashboard';
 import { AdminDashboardComponent } from './pages/admin-dashboard';
+import { ListingsComponent } from './pages/listings';
 
 import { authGuard } from './guards/auth-guard';
 import { roleGuard } from './guards/role-guard';
@@ -16,5 +17,6 @@ export const routes: Routes = [
     { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: UserDashboardComponent, canActivate: [authGuard, roleGuard('user')] },
   { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard, roleGuard('admin')] },
+  { path: 'listings', component: ListingsComponent, canActivate: [authGuard, roleGuard('user')] },
   { path: '**', component: NotFound } // ✅ Catch-all 404
 ];
