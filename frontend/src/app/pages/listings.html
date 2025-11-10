@@ -2,10 +2,12 @@
   <h2>Available Listings</h2>
   <div class="grid">
     <div class="card" *ngFor="let item of listings">
-      <img [src]="item.imageUrl || 'https://via.placeholder.com/150'" alt="Listing image">
+      <img [src]="'http://localhost:5000' + item.imageUrl" alt="Listing image">
       <h3>{{ item.title }}</h3>
       <p>{{ item.description }}</p>
       <strong>₹{{ item.price }}</strong>
+      <p><em>Category:</em> {{ item.category }}</p>
+      <p><em>Featured:</em> {{ item.isFeatured ? 'Yes' : 'No' }}</p>
       <small>Posted by: {{ item.owner?.name }}</small>
     </div>
   </div>

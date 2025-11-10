@@ -1,0 +1,28 @@
+<section class="form-container">
+  <h2>Add New Listing</h2>
+  <form (ngSubmit)="submit()">
+    <label>Title</label>
+    <input [(ngModel)]="title" name="title" required>
+
+    <label>Description</label>
+    <textarea [(ngModel)]="description" name="description"></textarea>
+
+    <label>Price (₹)</label>
+    <input type="number" [(ngModel)]="price" name="price" required>
+
+    <label>Image</label>
+<input type="file" (change)="handleFileInput($event)" accept="image/*">
+
+
+    <label>Category</label>
+    <input [(ngModel)]="category" name="category" required>
+
+    <label>Featured</label>
+    <select [(ngModel)]="isFeatured" name="isFeatured">
+      <option [value]="true">Yes</option>
+      <option [value]="false">No</option>
+    </select>
+
+    <button type="submit">Submit</button>
+  </form>
+</section>

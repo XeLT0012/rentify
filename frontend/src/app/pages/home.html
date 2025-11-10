@@ -6,7 +6,6 @@
   <div class="hero-buttons">
     <button routerLink="/login">Login</button>
     <button routerLink="/register">Register</button>
-    <button routerLink="/search">Browse Listings</button>
   </div>
 </section>
 
@@ -15,9 +14,10 @@
   <h2>Featured Listings</h2>
   <div class="listing-grid">
     <div *ngFor="let item of featuredListings" class="card">
-      <img [src]="item.imageUrl" alt="{{ item.title }}" />
+      <img [src]="'http://localhost:5000' + item.imageUrl" alt="{{ item.title }}" />
       <h3>{{ item.title }}</h3>
       <p>₹{{ item.price }} / day</p>
     </div>
   </div>
 </section>
+

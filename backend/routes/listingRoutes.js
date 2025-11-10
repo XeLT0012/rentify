@@ -2,17 +2,54 @@ const express = require('express');
 const router = express.Router();
 const Listing = require('../models/listingModel');
 const { verifyToken } = require('../middleware/authMiddleware');
+const upload = require('../middleware/uploadMiddleware');
 
 // Create listing
-router.post('/', verifyToken, async (req, res) => {
+router.post('/', verifyToken, upload.single('image'), async (req, res) => {
   try {
-    const listing = new Listing({ ...req.body, owner: req.user.id });
+    console.log('Incoming listing data:', req.body);
+    console.log('Uploaded file:', req.file);
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'Image file is required.' });
+    }
+
+    if (!req.body.title || !req.body.price || !req.body.category) {
+      return res.status(400).json({ error: 'Missing required fields.' });
+    }
+
+    const listing = new Listing({
+      title: req.body.title,
+      description: req.body.description,
+      price: parseFloat(req.body.price),
+      category: req.body.category,
+      isFeatured: req.body.isFeatured === 'true',
+      imageUrl: `/uploads/${req.file.filename}`,
+      owner: req.user.id
+    });
+
+    console.log('🧪 Listing to be saved:', {
+  title: req.body.title,
+  price: parseFloat(req.body.price),
+  category: req.body.category,
+  imageUrl: `/uploads/${req.file.filename}`,
+  owner: req.user.id
+});
+
+
     await listing.save();
     res.status(201).json(listing);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create listing' });
+    console.error('🔥 FULL ERROR:', err);
+    res.status(500).json({
+      error: err.message || 'Unknown server error',
+      name: err.name,
+      stack: err.stack,
+      details: err.errors || null
+    });
   }
 });
+
 
 // Get all listings
 router.get('/', async (req, res) => {

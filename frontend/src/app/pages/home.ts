@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule], // ✅ Removed deprecated HttpClientModule
+  imports: [CommonModule, RouterModule],
   templateUrl: './home.html',
   styleUrls: ['./home.scss']
 })
@@ -17,6 +17,8 @@ export class HomeComponent {
 
   ngOnInit() {
     this.http.get<any[]>('http://localhost:5000/api/listings')
-      .subscribe(data => this.featuredListings = data);
+      .subscribe(data => {
+        this.featuredListings = data.filter(item => item.isFeatured);
+      });
   }
 }
