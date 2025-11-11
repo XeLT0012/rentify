@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { verifyToken } = require('../middleware/authMiddleware');
+const profileUpload = require('../middleware/profileUploadMiddleware');
 
 // Register
 router.post('/register', async (req, res) => {
@@ -36,5 +38,46 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ error: 'Login failed' });
   }
 });
+
+// Get profile
+router.get('/profile', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+});
+
+// Update profile with image
+router.put('/profile', verifyToken, profileUpload.single('profileImage'), async (req, res) => {
+  try {
+    const updates = {
+      name: req.body.name,
+      email: req.body.email,
+      bio: req.body.bio,
+      phone: req.body.phone,
+      address: req.body.address
+    };
+
+    if (req.file) {
+      updates.profileImage = `/profile_uploads/${req.file.filename}`;
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      updates,
+      { new: true, runValidators: true } // ✅ ensures validation
+    ).select('-password');
+
+    res.json(user);
+  } catch (err) {
+    console.error('🔥 Profile update error:', err);
+    res.status(500).json({ error: err.message || 'Failed to update profile' });
+  }
+});
+
+
+
 
 module.exports = router;

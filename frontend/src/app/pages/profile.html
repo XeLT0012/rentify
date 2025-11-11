@@ -1,0 +1,51 @@
+<section class="profile">
+  <div class="profile-container">
+    <!-- Left side: details -->
+    <div class="profile-details">
+      <h2>{{ user.name }}</h2>
+      <p>{{ user.email }}</p>
+
+      <!-- View Mode -->
+      <div *ngIf="!editMode" class="profile-view">
+        <p><strong>Bio:</strong> {{ user.bio || 'Not added yet' }}</p>
+        <p><strong>Phone:</strong> {{ user.phone || 'Not added yet' }}</p>
+        <p><strong>Address:</strong> {{ user.address || 'Not added yet' }}</p>
+        <button (click)="toggleEdit()">Edit Profile</button>
+      </div>
+
+      <!-- Edit Mode -->
+      <div *ngIf="editMode" class="profile-edit">
+        <label>Name</label>
+        <input [(ngModel)]="user.name" required />
+
+        <label>Email</label>
+        <input [(ngModel)]="user.email" required type="email" />
+
+        <label>Bio</label>
+        <textarea [(ngModel)]="user.bio"></textarea>
+
+        <label>Phone</label>
+        <input [(ngModel)]="user.phone" type="tel" />
+
+        <label>Address</label>
+        <input [(ngModel)]="user.address" />
+
+        <label>Profile Image</label>
+        <input type="file" (change)="handleFileInput($event)" />
+
+        <div class="actions">
+          <button (click)="saveProfile()">Save</button>
+          <button (click)="toggleEdit()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right side: profile image -->
+    <div class="profile-image">
+      <img 
+        [src]="user.profileImage ? 'http://localhost:5000' + user.profileImage : 'assets/default-avatar.png'" 
+        alt="Profile Image" 
+      />
+    </div>
+  </div>
+</section>
