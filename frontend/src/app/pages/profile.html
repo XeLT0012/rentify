@@ -1,3 +1,13 @@
+<div class="sidebar">
+  <h3>User Dashboard</h3>
+  <ul>
+    <li><a routerLink="/listings">My Listings</a></li>
+    <li><a routerLink="/add-listing">Add Listing</a></li>
+    <li><a routerLink="/profile">Profile</a></li>
+    <li><a (click)="logout()">Logout</a></li>
+  </ul>
+</div>
+
 <section class="profile">
   <div class="profile-container">
     <!-- Left side: details -->
@@ -11,6 +21,10 @@
         <p><strong>Phone:</strong> {{ user.phone || 'Not added yet' }}</p>
         <p><strong>Address:</strong> {{ user.address || 'Not added yet' }}</p>
         <button (click)="toggleEdit()">Edit Profile</button>
+        <!-- Back Button -->
+  <div class="back-button">
+    <button routerLink="/dashboard">⬅ Back to Dashboard</button>
+  </div>
       </div>
 
       <!-- Edit Mode -->

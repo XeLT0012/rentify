@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-add-listing',
@@ -19,7 +20,7 @@ export class AddListingComponent {
   isFeatured = false;
   imageFile: File | null = null;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private auth: AuthService) {}
 
   handleFileInput(event: any) {
     this.imageFile = event.target.files[0];
@@ -53,10 +54,11 @@ export class AddListingComponent {
   const message = err.error?.error || err.error?.message || 'Unknown error';
   const details = err.error?.details ? JSON.stringify(err.error.details) : '';
 
-  alert(`Error ${err.status}: ${message}\n${details}`);
-}
-
-
-    });
+  alert(`Error ${err.status}: ${message}\n${details}`);}});
   }
+
+  logout() {
+  this.auth.logout();
+  alert('You have been logged out.');
+}
 }

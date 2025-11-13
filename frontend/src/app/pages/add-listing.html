@@ -1,3 +1,13 @@
+<div class="sidebar">
+  <h3>User Dashboard</h3>
+  <ul>
+    <li><a routerLink="/listings">My Listings</a></li>
+    <li><a routerLink="/add-listing">Add Listing</a></li>
+    <li><a routerLink="/profile">Profile</a></li>
+    <li><a (click)="logout()">Logout</a></li>
+  </ul>
+</div>
+
 <section class="form-container">
   <h2>Add New Listing</h2>
   <form (ngSubmit)="submit()">
@@ -24,5 +34,9 @@
     </select>
 
     <button type="submit">Submit</button>
+    <!-- Back Button -->
+  <div class="back-button">
+    <button routerLink="/dashboard">⬅ Back to Dashboard</button>
+  </div>
   </form>
 </section>

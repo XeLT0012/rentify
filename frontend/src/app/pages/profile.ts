@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss']
 })
@@ -15,7 +17,7 @@ export class ProfileComponent {
   editMode = false;
   profileImageFile: File | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private auth: AuthService) {}
 
   ngOnInit() {
     const token = localStorage.getItem('token');
@@ -55,6 +57,11 @@ export class ProfileComponent {
     this.user = updated;
     this.editMode = false;
   });
+}
+
+logout() {
+  this.auth.logout();
+  alert('You have been logged out.');
 }
 
 }
