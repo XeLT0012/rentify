@@ -1,17 +1,16 @@
 const multer = require('multer');
 const path = require('path');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
+// Save images inside backend/uploads/
+const imageStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../uploads')); // ✅ relative to backend/
   },
-  filename: function (req, file, cb) {
-    const uniqueName = Date.now() + '-' + file.originalname;
-    cb(null, uniqueName);
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
   }
 });
 
+const imageUpload = multer({ storage: imageStorage });
 
-const upload = multer({ storage });
-
-module.exports = upload;
+module.exports = { imageUpload };

@@ -2,54 +2,40 @@ const express = require('express');
 const router = express.Router();
 const Listing = require('../models/listingModel');
 const { verifyToken } = require('../middleware/authMiddleware');
-const upload = require('../middleware/uploadMiddleware');
+const { imageUpload } = require('../middleware/uploadMiddleware');
 
-// Create listing
-router.post('/', verifyToken, upload.single('image'), async (req, res) => {
+// Create new listing
+router.post('/', verifyToken, imageUpload.array('images', 5), async (req, res) => {
   try {
-    console.log('Incoming listing data:', req.body);
-    console.log('Uploaded file:', req.file);
-
-    if (!req.file) {
-      return res.status(400).json({ error: 'Image file is required.' });
-    }
-
-    if (!req.body.title || !req.body.price || !req.body.category) {
-      return res.status(400).json({ error: 'Missing required fields.' });
-    }
+    const images = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
     const listing = new Listing({
       title: req.body.title,
-      description: req.body.description,
-      price: parseFloat(req.body.price),
       category: req.body.category,
-      isFeatured: req.body.isFeatured === 'true',
-      imageUrl: `/uploads/${req.file.filename}`,
-      owner: req.user.id
+      description: req.body.description,
+      condition: req.body.condition,
+      price: req.body.price,
+      priceUnit: req.body.priceUnit,
+      securityDeposit: req.body.securityDeposit,
+      availableFrom: req.body.availableFrom,
+      availableUntil: req.body.availableUntil,
+      minDuration: req.body.minDuration,
+      maxDuration: req.body.maxDuration,
+      deliveryOption: req.body.deliveryOption,
+      location: req.body.location,
+      owner: req.user.id,
+      contactPreference: req.body.contactPreference,
+      images,
+      terms: req.body.terms
     });
-
-    console.log('🧪 Listing to be saved:', {
-  title: req.body.title,
-  price: parseFloat(req.body.price),
-  category: req.body.category,
-  imageUrl: `/uploads/${req.file.filename}`,
-  owner: req.user.id
-});
-
 
     await listing.save();
     res.status(201).json(listing);
   } catch (err) {
-    console.error('🔥 FULL ERROR:', err);
-    res.status(500).json({
-      error: err.message || 'Unknown server error',
-      name: err.name,
-      stack: err.stack,
-      details: err.errors || null
-    });
+    console.error('🔥 Listing creation error:', err);
+    res.status(500).json({ error: err.message || 'Failed to create listing' });
   }
 });
-
 
 // Get all listings
 router.get('/', async (req, res) => {

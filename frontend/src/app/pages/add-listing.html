@@ -10,33 +10,119 @@
 
 <section class="form-container">
   <h2>Add New Listing</h2>
-  <form (ngSubmit)="submit()">
-    <label>Title</label>
-    <input [(ngModel)]="title" name="title" required>
+  <form (ngSubmit)="submit()" #listingForm="ngForm">
 
-    <label>Description</label>
-    <textarea [(ngModel)]="description" name="description"></textarea>
+    <!-- 📝 Essential Item Details -->
+    <h3>📝 Essential Item Details</h3>
+    <div class="form-group">
+      <label>Item Name/Title</label>
+      <input [(ngModel)]="title" name="title" required placeholder="Canon DSLR Camera – EOS 90D">
+    </div>
 
-    <label>Price (₹)</label>
-    <input type="number" [(ngModel)]="price" name="price" required>
+    <div class="form-group">
+      <label>Category</label>
+      <select [(ngModel)]="category" name="category" required>
+        <option value="">Select Category</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Furniture">Furniture</option>
+        <option value="Vehicles">Vehicles</option>
+        <option value="Tools">Tools</option>
+        <option value="Others">Others</option>
+      </select>
+    </div>
 
-    <label>Image</label>
-<input type="file" (change)="handleFileInput($event)" accept="image/*">
+    <div class="form-group">
+      <label>Description</label>
+      <textarea [(ngModel)]="description" name="description" placeholder="Features, condition, usage notes"></textarea>
+    </div>
 
+    <div class="form-group">
+      <label>Condition</label>
+      <select [(ngModel)]="condition" name="condition" required>
+        <option value="New">New</option>
+        <option value="Like New">Like New</option>
+        <option value="Good">Good</option>
+        <option value="Fair">Fair</option>
+      </select>
+    </div>
 
-    <label>Category</label>
-    <input [(ngModel)]="category" name="category" required>
+    <!-- 💰 Rental Information -->
+    <h3>💰 Rental Information</h3>
+    <div class="form-group">
+      <label>Rental Price</label>
+      <input type="number" [(ngModel)]="price" name="price" required placeholder="e.g. 500">
+      <select [(ngModel)]="priceUnit" name="priceUnit" required>
+        <option value="per_day">Per Day</option>
+        <option value="per_week">Per Week</option>
+        <option value="per_month">Per Month</option>
+      </select>
+    </div>
 
-    <label>Featured</label>
-    <select [(ngModel)]="isFeatured" name="isFeatured">
-      <option [value]="true">Yes</option>
-      <option [value]="false">No</option>
-    </select>
+    <div class="form-group">
+      <label>Security Deposit (optional)</label>
+      <input type="number" [(ngModel)]="securityDeposit" name="securityDeposit" placeholder="e.g. 2000">
+    </div>
+
+    <div class="form-group">
+      <label>Availability</label>
+      <input type="date" [(ngModel)]="availableFrom" name="availableFrom"> to
+      <input type="date" [(ngModel)]="availableUntil" name="availableUntil">
+    </div>
+
+    <div class="form-group">
+      <label>Minimum Rental Duration</label>
+      <input type="text" [(ngModel)]="minDuration" name="minDuration" placeholder="e.g. 2 days">
+    </div>
+
+    <div class="form-group">
+      <label>Maximum Rental Duration</label>
+      <input type="text" [(ngModel)]="maxDuration" name="maxDuration" placeholder="e.g. 1 month">
+    </div>
+
+    <!-- 📍 Location & Logistics -->
+    <h3>📍 Location & Logistics</h3>
+    <div class="form-group">
+      <label>Pickup/Delivery Options</label>
+      <select [(ngModel)]="deliveryOption" name="deliveryOption" required>
+        <option value="pickup">Pickup Only</option>
+        <option value="delivery">Delivery Available</option>
+        <option value="negotiable">Negotiable</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Location</label>
+      <input [(ngModel)]="location" name="location" required placeholder="City/Area">
+    </div>
+
+    <!-- 👤 Owner Information -->
+    <h3>👤 Owner Information</h3>
+    <div class="form-group">
+      <label>Contact Preference</label>
+      <select [(ngModel)]="contactPreference" name="contactPreference" required>
+        <option value="chat">In-app Chat</option>
+        <option value="phone">Phone</option>
+        <option value="email">Email</option>
+      </select>
+    </div>
+
+    <!-- 📸 Media -->
+    <h3>📸 Media</h3>
+    <div class="form-group">
+      <label>Item Images (2–3 recommended)</label>
+      <input type="file" (change)="handleFileInput($event)" accept="image/*" multiple>
+    </div>
+
+    <!-- ✅ Trust & Safety -->
+    <h3>✅ Trust & Safety</h3>
+    <div class="form-group">
+      <label>Terms & Conditions</label>
+      <textarea [(ngModel)]="terms" name="terms" placeholder="e.g. No overnight use, return clean"></textarea>
+    </div>
 
     <button type="submit">Submit</button>
-    <!-- Back Button -->
-  <div class="back-button">
-    <button routerLink="/dashboard">⬅ Back to Dashboard</button>
-  </div>
+    <div class="back-button">
+      <button routerLink="/dashboard">⬅ Back to Dashboard</button>
+    </div>
   </form>
 </section>

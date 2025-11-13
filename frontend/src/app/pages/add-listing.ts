@@ -13,52 +13,95 @@ import { AuthService } from '../services/auth';
   styleUrls: ['./add-listing.scss']
 })
 export class AddListingComponent {
+  // 📝 Essential Item Details
   title = '';
-  description = '';
-  price: number | null = null;
   category = '';
-  isFeatured = false;
-  imageFile: File | null = null;
+  description = '';
+  condition = '';
+
+  // 💰 Rental Information
+  price: number | null = null;
+  priceUnit = 'per_day';
+  securityDeposit: number | null = null;
+  availableFrom: string = '';
+  availableUntil: string = '';
+  minDuration = '';
+  maxDuration = '';
+
+  // 📍 Location & Logistics
+  deliveryOption = '';
+  location = '';
+
+  // 👤 Owner Information
+  contactPreference = '';
+
+  // 📸 Media
+  imageFiles: File[] = [];
+
+  // ✅ Trust & Safety
+  terms = '';
 
   constructor(private http: HttpClient, private router: Router, private auth: AuthService) {}
 
   handleFileInput(event: any) {
-    this.imageFile = event.target.files[0];
+    this.imageFiles = Array.from(event.target.files);
   }
 
   submit() {
     const token = localStorage.getItem('token');
     if (!token) return alert('You must be logged in.');
 
-    const formData = new FormData();
-    formData.append('title', this.title);
-    formData.append('description', this.description);
-    formData.append('price', this.price?.toString() || '');
-    formData.append('category', this.category);
-    formData.append('isFeatured', this.isFeatured.toString());
-
-    if (this.imageFile) {
-      formData.append('image', this.imageFile); // ✅ must match backend field name
+    if (!this.title || !this.category || !this.price || !this.condition || !this.location) {
+      return alert('Please fill all required fields.');
     }
+
+    const formData = new FormData();
+    // 📝 Essential Item Details
+    formData.append('title', this.title);
+    formData.append('category', this.category);
+    formData.append('description', this.description);
+    formData.append('condition', this.condition);
+
+    // 💰 Rental Information
+    formData.append('price', this.price?.toString() || '');
+    formData.append('priceUnit', this.priceUnit);
+    if (this.securityDeposit) formData.append('securityDeposit', this.securityDeposit.toString());
+    if (this.availableFrom) formData.append('availableFrom', this.availableFrom);
+    if (this.availableUntil) formData.append('availableUntil', this.availableUntil);
+    formData.append('minDuration', this.minDuration);
+    formData.append('maxDuration', this.maxDuration);
+
+    // 📍 Location & Logistics
+    formData.append('deliveryOption', this.deliveryOption);
+    formData.append('location', this.location);
+
+    // 👤 Owner Information
+    formData.append('contactPreference', this.contactPreference);
+
+    // 📸 Media
+    this.imageFiles.forEach(file => formData.append('images', file));
+
+    // ✅ Trust & Safety
+    formData.append('terms', this.terms);
 
     this.http.post('http://localhost:5000/api/listings', formData, {
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe({
       next: () => {
-        alert('Listing created!');
+        alert('Listing created successfully!');
         this.router.navigate(['/listings']);
       },
       error: err => {
-  console.error('🔥 Full backend error:', err.error);
-
-  const message = err.error?.error || err.error?.message || 'Unknown error';
-  const details = err.error?.details ? JSON.stringify(err.error.details) : '';
-
-  alert(`Error ${err.status}: ${message}\n${details}`);}});
+        console.error('🔥 Full backend error:', err.error);
+        const message = err.error?.error || err.error?.message || 'Unknown error';
+        const details = err.error?.details ? JSON.stringify(err.error.details) : '';
+        alert(`Error ${err.status}: ${message}\n${details}`);
+      }
+    });
   }
 
   logout() {
-  this.auth.logout();
-  alert('You have been logged out.');
-}
+    this.auth.logout();
+    alert('You have been logged out.');
+  }
 }
