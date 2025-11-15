@@ -1,6 +1,7 @@
 <div class="sidebar">
   <h3>User Dashboard</h3>
   <ul>
+    <li><a routerLink="/dashboard">Home</a></li>
     <li><a routerLink="/listings">My Listings</a></li>
     <li><a routerLink="/add-listing">Add Listing</a></li>
     <li><a routerLink="/profile">Profile</a></li>
@@ -47,16 +48,12 @@
     </div>
 
     <!-- 💰 Rental Information -->
-    <h3>💰 Rental Information</h3>
-    <div class="form-group">
-      <label>Rental Price</label>
-      <input type="number" [(ngModel)]="price" name="price" required placeholder="e.g. 500">
-      <select [(ngModel)]="priceUnit" name="priceUnit" required>
-        <option value="per_day">Per Day</option>
-        <option value="per_week">Per Week</option>
-        <option value="per_month">Per Month</option>
-      </select>
-    </div>
+<h3>💰 Rental Information</h3>
+<div class="form-group">
+  <label>Rental Price (Per Day)</label>
+  <input type="number" [(ngModel)]="price" name="price" required placeholder="e.g. 500">
+</div>
+
 
     <div class="form-group">
       <label>Security Deposit (optional)</label>

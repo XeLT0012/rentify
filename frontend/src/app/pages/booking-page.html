@@ -1,0 +1,27 @@
+<div class="booking-page" *ngIf="listing">
+  <h2>Book: {{ listing.title }}</h2>
+  <img [src]="'http://localhost:5000' + listing.images[0]" alt="Listing image">
+
+  <form>
+    <label>Start Date</label>
+<input type="date" [(ngModel)]="startDate" name="startDate"
+       [min]="listing.availableFrom | date:'yyyy-MM-dd'"
+       [max]="listing.availableUntil | date:'yyyy-MM-dd'">
+
+<label>End Date</label>
+<input type="date" [(ngModel)]="endDate" name="endDate"
+       [min]="listing.availableFrom | date:'yyyy-MM-dd'"
+       [max]="listing.availableUntil | date:'yyyy-MM-dd'">
+
+
+    <label>Notes (optional)</label>
+    <textarea [(ngModel)]="notes" name="notes"></textarea>
+
+    <p><strong>Total Price:</strong> ₹{{ totalPrice }}</p>
+
+    <div class="actions">
+      <button type="button" (click)="confirmBooking()">Confirm Booking</button>
+      <a routerLink="/dashboard" class="cancel">Cancel</a>
+    </div>
+  </form>
+</div>

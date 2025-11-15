@@ -20,8 +20,7 @@ export class AddListingComponent {
   condition = '';
 
   // 💰 Rental Information
-  price: number | null = null;
-  priceUnit = 'per_day';
+  price: number = 0;
   securityDeposit: number | null = null;
   availableFrom: string = '';
   availableUntil: string = '';
@@ -63,8 +62,7 @@ export class AddListingComponent {
     formData.append('condition', this.condition);
 
     // 💰 Rental Information
-    formData.append('price', this.price?.toString() || '');
-    formData.append('priceUnit', this.priceUnit);
+    formData.append('price', this.price.toString());
     if (this.securityDeposit) formData.append('securityDeposit', this.securityDeposit.toString());
     if (this.availableFrom) formData.append('availableFrom', this.availableFrom);
     if (this.availableUntil) formData.append('availableUntil', this.availableUntil);

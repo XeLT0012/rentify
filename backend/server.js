@@ -17,6 +17,9 @@ app.use('/api/users', userRoutes);
 const listingRoutes = require('./routes/listingRoutes');
 app.use('/api/listings', listingRoutes);
 
+const bookingRoutes = require('./routes/bookingRoutes');
+app.use('/api/bookings', bookingRoutes);
+
 // ✅ Optional root route for testing
 app.get('/', (req, res) => {
   res.send('Backend is running!');

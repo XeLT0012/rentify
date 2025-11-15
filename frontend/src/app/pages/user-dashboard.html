@@ -1,14 +1,52 @@
-<div class="sidebar">
-  <h3>User Dashboard</h3>
-  <ul>
-    <li><a routerLink="/listings">My Listings</a></li>
-    <li><a routerLink="/add-listing">Add Listing</a></li>
-    <li><a routerLink="/profile">Profile</a></li>
-    <li><a (click)="logout()">Logout</a></li>
-  </ul>
-</div>
+<div class="dashboard-wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h3>Rentify</h3>
+    <ul>
+      <li><a routerLink="/dashboard">🏠 Home</a></li>
+      <li><a routerLink="/listings">📦 My Listings</a></li>
+      <li><a routerLink="/add-listing">➕ Add Listing</a></li>
+      <li><a routerLink="/profile">👤 Profile</a></li>
+      <li><a (click)="logout()">🚪 Logout</a></li>
+    </ul>
+  </aside>
 
-<div class="dashboard-content">
-  <h2>Welcome, User!</h2>
-  <p>Use the sidebar to manage your listings and profile.</p>
+  <!-- Content -->
+  <main class="dashboard-content">
+    <h2>Welcome, User 👋</h2>
+    <p>Explore all available listings and connect with owners.</p>
+
+    <div class="listing-grid">
+      <div class="listing-card" *ngFor="let item of listings" (click)="openPopup(item)">
+        <img [src]="'http://localhost:5000' + item.images[0]" alt="Listing image">
+        <h3>{{ item.title }}</h3>
+        <strong>₹{{ item.price }} {{ item.priceUnit }}</strong>
+        <p><em>{{ item.category }}</em></p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Fullscreen Popup -->
+  <div class="listing-popup" *ngIf="selectedListing">
+    <div class="popup-content">
+      <div class="image-slider">
+        <img [src]="'http://localhost:5000' + selectedListing.images[currentImageIndex]" alt="Listing image">
+        <button (click)="prevImage($event)">⬅</button>
+        <button (click)="nextImage($event)">➡</button>
+      </div>
+
+      <h3>{{ selectedListing.title }}</h3>
+      <p>{{ selectedListing.description }}</p>
+      <p><strong>Condition:</strong> {{ selectedListing.condition }}</p>
+      <p><strong>Location:</strong> {{ selectedListing.location }}</p>
+      <p><strong>Available:</strong> {{ selectedListing.availableFrom | date }} to {{ selectedListing.availableUntil | date }}</p>
+      <p><strong>Contact:</strong> {{ selectedListing.contactPreference }}</p>
+
+      <div class="action-buttons">
+        <button class="rent-btn" [routerLink]="['/booking', selectedListing._id]">Rent Now</button>
+        <button class="contact-btn">Contact Agent</button>
+        <button class="cancel-btn" (click)="closePopup()">✖ Cancel</button>
+      </div>
+    </div>
+  </div>
 </div>
