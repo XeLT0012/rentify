@@ -21,11 +21,8 @@ export class AddListingComponent {
 
   // 💰 Rental Information
   price: number = 0;
-  securityDeposit: number | null = null;
   availableFrom: string = '';
   availableUntil: string = '';
-  minDuration = '';
-  maxDuration = '';
 
   // 📍 Location & Logistics
   deliveryOption = '';
@@ -63,11 +60,8 @@ export class AddListingComponent {
 
     // 💰 Rental Information
     formData.append('price', this.price.toString());
-    if (this.securityDeposit) formData.append('securityDeposit', this.securityDeposit.toString());
     if (this.availableFrom) formData.append('availableFrom', this.availableFrom);
     if (this.availableUntil) formData.append('availableUntil', this.availableUntil);
-    formData.append('minDuration', this.minDuration);
-    formData.append('maxDuration', this.maxDuration);
 
     // 📍 Location & Logistics
     formData.append('deliveryOption', this.deliveryOption);

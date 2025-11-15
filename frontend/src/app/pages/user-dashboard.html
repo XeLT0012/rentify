@@ -12,19 +12,31 @@
   </aside>
 
   <!-- Content -->
-  <main class="dashboard-content">
-    <h2>Welcome, User 👋</h2>
-    <p>Explore all available listings and connect with owners.</p>
+<main class="dashboard-content">
+  <h2>Welcome, User 👋</h2>
+  <p>Explore all available listings and connect with owners.</p>
 
-    <div class="listing-grid">
-      <div class="listing-card" *ngFor="let item of listings" (click)="openPopup(item)">
-        <img [src]="'http://localhost:5000' + item.images[0]" alt="Listing image">
-        <h3>{{ item.title }}</h3>
-        <strong>₹{{ item.price }} {{ item.priceUnit }}</strong>
-        <p><em>{{ item.category }}</em></p>
-      </div>
+  <!-- 🔍 Search and Sort -->
+  <div class="filter-bar">
+    <input type="text" [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Search by title or category">
+    <select [(ngModel)]="sortOption" (change)="applyFilters()">
+      <option value="priceLowToHigh">Price: Low to High</option>
+      <option value="priceHighToLow">Price: High to Low</option>
+      <option value="newest">Newest Listings</option>
+    </select>
+  </div>
+
+  <!-- 🗂 Listing Grid -->
+  <div class="listing-grid">
+    <div class="listing-card" *ngFor="let item of filteredListings" (click)="openPopup(item)">
+      <img [src]="'http://localhost:5000' + item.images[0]" alt="Listing image">
+      <h3>{{ item.title }}</h3>
+      <strong>₹{{ item.price }}</strong>
+      <p><em>{{ item.category }}</em></p>
     </div>
-  </main>
+  </div>
+</main>
+
 
   <!-- Fullscreen Popup -->
   <div class="listing-popup" *ngIf="selectedListing">

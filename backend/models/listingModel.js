@@ -17,16 +17,8 @@ const listingSchema = new mongoose.Schema({
 
   // 💰 Rental Information
   price: { type: Number, required: true },
-  priceUnit: { 
-    type: String, 
-    enum: ['per_day', 'per_week', 'per_month'], 
-    default: 'per_day' 
-  },
-  securityDeposit: { type: Number },
   availableFrom: { type: Date },
   availableUntil: { type: Date },
-  minDuration: { type: String },
-  maxDuration: { type: String },
 
   // 📍 Location & Logistics
   deliveryOption: { 
