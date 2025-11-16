@@ -8,6 +8,7 @@ import { ListingsComponent } from './pages/listings';
 import { AddListingComponent } from './pages/add-listing';
 import { ProfileComponent } from './pages/profile';
 import { BookingPageComponent  } from './pages/booking-page';
+import { MyBookingsComponent } from './pages/my-bookings';
 
 import { authGuard } from './guards/auth-guard';
 import { roleGuard } from './guards/role-guard';
@@ -25,5 +26,6 @@ export const routes: Routes = [
   { path: 'add-listing', component: AddListingComponent, canActivate: [authGuard, roleGuard('user')] },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard, roleGuard('user')] },
   { path: 'booking/:id', component: BookingPageComponent , canActivate: [authGuard, roleGuard('user')] },
+  { path: 'bookings', component: MyBookingsComponent , canActivate: [authGuard, roleGuard('user')] },
   { path: '**', component: NotFoundComponent } // ✅ Catch-all 404
 ];

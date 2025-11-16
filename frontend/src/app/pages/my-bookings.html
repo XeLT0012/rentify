@@ -1,0 +1,42 @@
+<div class="dashboard-wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h3>Rentify</h3>
+    <ul>
+      <li><a routerLink="/dashboard">🏠 Home</a></li>
+      <li><a routerLink="/listings">📦 My Listings</a></li>
+      <li><a routerLink="/add-listing">➕ Add Listing</a></li>
+      <li><a routerLink="/profile">👤 Profile</a></li>
+      <li><a routerLink="/bookings">📑 My Bookings</a></li> <!-- ✅ New button -->
+      <li><a (click)="logout()">🚪 Logout</a></li>
+    </ul>
+  </aside>
+
+  <!-- Content -->
+  <main class="dashboard-content">
+    <h2>📑 My Bookings</h2>
+    <div class="booking-grid">
+      <div class="booking-card" *ngFor="let booking of bookings">
+        <img [src]="'http://localhost:5000' + booking.listing.images[0]" alt="Listing image">
+        <h3>{{ booking.listing.title }}</h3>
+        <p><strong>Status:</strong> {{ booking.status }}</p>
+        <p><strong>Booking Dates:</strong> {{ booking.startDate | date }} → {{ booking.endDate | date }}</p>
+        <p><strong>Total Price:</strong> ₹{{ booking.totalPrice }}</p>
+
+        <!-- ✅ Reveal agent details only if confirmed -->
+        <div *ngIf="booking.status === 'confirmed'; else pendingBlock">
+  <p><strong>Agent Name:</strong> {{ booking.listing.owner?.name }}</p>
+  <p><strong>Agent Email:</strong> {{ booking.listing.owner?.email }}</p>
+  <p><strong>Agent Phone:</strong> {{ booking.listing.owner?.phone }}</p>
+  <p><strong>Location:</strong> {{ booking.listing?.location }}</p>
+  <p><strong>Contact Preference:</strong> {{ booking.listing?.contactPreference }}</p>
+</div>
+
+<ng-template #pendingBlock>
+  <p><em>Agent details will be revealed once booking is confirmed.</em></p>
+</ng-template>
+
+      </div>
+    </div>
+  </main>
+</div>

@@ -5,6 +5,7 @@
     <li><a routerLink="/listings">My Listings</a></li>
     <li><a routerLink="/add-listing">Add Listing</a></li>
     <li><a routerLink="/profile">Profile</a></li>
+    <li><a routerLink="/bookings">📑 My Bookings</a></li> 
     <li><a (click)="logout()">Logout</a></li>
   </ul>
 </div>
@@ -81,7 +82,6 @@
     <div class="form-group">
       <label>Contact Preference</label>
       <select [(ngModel)]="contactPreference" name="contactPreference" required>
-        <option value="chat">In-app Chat</option>
         <option value="phone">Phone</option>
         <option value="email">Email</option>
       </select>
