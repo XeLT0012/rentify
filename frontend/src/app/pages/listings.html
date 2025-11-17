@@ -11,22 +11,68 @@
 </div>
 
 <section class="listings">
-  <h2>Available Listings</h2>
-
-  <!-- Back Button -->
-  <div class="back-button">
-    <button routerLink="/dashboard">⬅ Back to Dashboard</button>
-  </div>
+  <h2>My Listings</h2>
 
   <div class="grid">
-    <div class="card" *ngFor="let item of listings">
-      <img [src]="'http://localhost:5000' + item.imageUrl" alt="Listing image">
+    <div class="card" *ngFor="let item of listings" (click)="openListing(item)">
+      <img [src]="'http://localhost:5000' + item.images[0]" alt="Listing image">
       <h3>{{ item.title }}</h3>
       <p>{{ item.description }}</p>
       <strong>₹{{ item.price }}</strong>
       <p><em>Category:</em> {{ item.category }}</p>
-      <p><em>Featured:</em> {{ item.isFeatured ? 'Yes' : 'No' }}</p>
       <small>Posted by: {{ item.owner?.name }}</small>
     </div>
   </div>
 </section>
+
+<!-- Modal Popup -->
+<div class="modal" *ngIf="expandedListing">
+  <div class="modal-content">
+    <span class="close" (click)="closeModal()">×</span>
+
+    <!-- Normal view -->
+    <div *ngIf="!isEditMode">
+      <h2>{{ expandedListing.title }}</h2>
+      <img [src]="'http://localhost:5000' + expandedListing.images[0]" alt="Listing image">
+      <p>{{ expandedListing.description }}</p>
+      <strong>₹{{ expandedListing.price }}</strong>
+      <p><em>Category:</em> {{ expandedListing.category }}</p>
+      <p><em>Location:</em> {{ expandedListing.location }}</p>
+      <p><em>Contact Preference:</em> {{ expandedListing.contactPreference }}</p>
+
+      <div class="actions">
+        <button (click)="enableEdit()">✏️ Edit</button>
+        <button (click)="deleteListing(expandedListing._id)">🗑 Delete</button>
+      </div>
+
+      <h3>Bookings for this product:</h3>
+      <div *ngFor="let booking of expandedBookings" class="booking">
+        <p><strong>Renter:</strong> {{ booking.renter?.name }} ({{ booking.renter?.email }})</p>
+        <p>Status: {{ booking.status }}</p>
+        <button (click)="confirmBooking(booking._id)">✅ Confirm</button>
+        <button (click)="rejectBooking(booking._id)">❌ Reject</button>
+      </div>
+    </div>
+
+    <!-- Edit mode -->
+    <div *ngIf="isEditMode">
+      <h2>Edit Listing</h2>
+      <form>
+        <label>Title</label>
+        <input [(ngModel)]="expandedListing.title" name="title">
+
+        <label>Description</label>
+        <textarea [(ngModel)]="expandedListing.description" name="description"></textarea>
+
+        <label>Price</label>
+        <input type="number" [(ngModel)]="expandedListing.price" name="price">
+
+        <label>Location</label>
+        <input [(ngModel)]="expandedListing.location" name="location">
+
+        <button type="button" (click)="saveListing()">💾 Save</button>
+        <button type="button" (click)="isEditMode=false">Cancel</button>
+      </form>
+    </div>
+  </div>
+</div>

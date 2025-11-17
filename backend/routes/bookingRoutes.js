@@ -43,27 +43,46 @@ router.get('/', verifyToken, async (req, res) => {
   }
 });
 
+// Get bookings for a specific listing (owner only)
+router.get('/listing/:listingId', verifyToken, async (req, res) => {
+  try {
+    const bookings = await Booking.find({ listing: req.params.listingId })
+      .populate('renter', 'name email phone'); // renter details
+    res.json(bookings);
+  } catch (err) {
+    console.error('🔥 Error fetching bookings for listing:', err);
+    res.status(500).json({ error: 'Failed to fetch bookings' });
+  }
+});
 
 // Agent updates booking status
 router.put('/:id/status', verifyToken, async (req, res) => {
   try {
     const { status } = req.body;
-    const booking = await Booking.findById(req.params.id);
 
-    if (!booking) return res.status(404).json({ error: 'Booking not found' });
+    if (!['pending', 'confirmed', 'cancelled'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid booking status' });
+    }
 
-    // Only listing owner can update status
-    if (booking.listing.owner.toString() !== req.user.id) {
-      return res.status(403).json({ error: 'Not authorized to update booking' });
+    const booking = await Booking.findById(req.params.id).populate('listing');
+
+    if (!booking) {
+      return res.status(404).json({ error: 'Booking not found' });
+    }
+
+    if (!booking.listing || booking.listing.owner.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to update this booking' });
     }
 
     booking.status = status;
     await booking.save();
 
-    res.json(booking);
+    res.json({ message: 'Booking status updated successfully', booking });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update booking status' });
+    console.error('🔥 Booking update error:', err); // ✅ log actual error
+    res.status(500).json({ error: 'Failed to update booking status', details: err.message });
   }
 });
+
 
 module.exports = router;

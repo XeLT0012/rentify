@@ -1,102 +1,259 @@
-.listings {
-  padding: 2rem;
-
-  h2 {
-    margin-bottom: 1rem;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .card {
-    background: #f9f9f9;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    text-align: center;
-
-    img {
-      width: 100%;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 4px;
-    }
-
-    h3 {
-      margin: 0.5rem 0;
-    }
-
-    p {
-      font-size: 0.9rem;
-      color: #555;
-    }
-
-    strong {
-      display: block;
-      margin-top: 0.5rem;
-      color: #2c3e50;
-    }
-
-    small {
-      display: block;
-      margin-top: 0.25rem;
-      font-size: 0.8rem;
-      color: #888;
-    }
-  }
-}
-.back-button {
-  margin-bottom: 1rem;
-
-  button {
-    background: #007bff;
-    color: #fff;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    cursor: pointer;
-
-    &:hover {
-      background: #0056b3;
-    }
-  }
-}
+/* Sidebar */
 .sidebar {
   width: 220px;
-  height: 100vh;
   background: #2c3e50;
-  color: white;
-  padding: 1rem;
+  color: #fff;
+  padding: 20px;
+  min-height: 100vh;
   position: fixed;
-  top: 0;
   left: 0;
+  top: 0;
+}
 
-  h3 {
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-  }
+.sidebar h3 {
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  text-align: center;
+  color: #ecf0f1;
+}
 
-  ul {
-    list-style: none;
-    padding: 0;
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
 
-    li {
-      margin: 0.5rem 0;
+.sidebar ul li {
+  margin: 12px 0;
+}
 
-      a {
-        color: white;
-        text-decoration: none;
-        display: block;
-        padding: 0.5rem;
-        border-radius: 4px;
+.sidebar ul li a {
+  display: block;
+  padding: 10px;
+  color: #ecf0f1;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
 
-        &:hover {
-          background: #34495e;
-        }
-      }
-    }
-  }
+.sidebar ul li a:hover {
+  background: #34495e;
+}
+
+/* Listings section */
+.listings {
+  margin-left: 240px;
+  padding: 30px;
+  background: #f9f9f9;
+  min-height: 100vh;
+}
+
+.listings h2 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #2c3e50;
+}
+
+/* Grid layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* Card styles */
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 15px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.card p {
+  margin: 4px 0;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.card strong {
+  color: #000;
+}
+
+.card small {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* Modal popup */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 10px; right: 15px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Actions */
+.actions {
+  margin: 15px 0;
+}
+
+.actions button {
+  margin-right: 10px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.actions button:first-of-type {
+  background: #3498db;
+  color: #fff;
+}
+
+.actions button:first-of-type:hover {
+  background: #2980b9;
+}
+
+.actions button:last-of-type {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.actions button:last-of-type:hover {
+  background: #c0392b;
+}
+
+/* Booking section */
+.booking {
+  background: #f4f6f8;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 6px;
+}
+
+.booking button {
+  margin-right: 8px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.booking button:first-of-type {
+  background: #2ecc71;
+  color: #fff;
+}
+
+.booking button:first-of-type:hover {
+  background: #27ae60;
+}
+
+.booking button:last-of-type {
+  background: #f39c12;
+  color: #fff;
+}
+
+.booking button:last-of-type:hover {
+  background: #d35400;
+}
+
+/* Edit form inside modal */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form label {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+form input,
+form textarea {
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+form button {
+  margin-top: 12px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s ease;
+}
+
+/* Save button */
+form button:first-of-type {
+  background: #2ecc71;
+  color: #fff;
+}
+
+form button:first-of-type:hover {
+  background: #27ae60;
+}
+
+/* Cancel button */
+form button:last-of-type {
+  background: #95a5a6;
+  color: #fff;
+}
+
+form button:last-of-type:hover {
+  background: #7f8c8d;
 }
