@@ -1,0 +1,19 @@
+.checkout-page {
+  max-width: 600px;
+  margin: 2rem auto;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+
+  h2 {
+    margin-bottom: 1rem;
+    color: #0f172a;
+  }
+
+  p {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+    color: #334155;
+  }
+}

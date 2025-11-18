@@ -1,0 +1,6 @@
+<div class="checkout-page" *ngIf="booking">
+  <h2>Checkout</h2>
+  <p><strong>Listing:</strong> {{ booking.listing.title }}</p>
+  <p><strong>Total Price:</strong> ₹{{ booking.totalPrice }}</p>
+  <p>Redirecting to Razorpay...</p>
+</div>

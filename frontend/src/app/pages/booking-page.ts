@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-booking-page',
@@ -17,7 +18,7 @@ export class BookingPageComponent implements OnInit {
   endDate = '';
   notes = '';
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
+  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router, private auth: AuthService) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -31,7 +32,20 @@ export class BookingPageComponent implements OnInit {
     const start = new Date(this.startDate);
     const end = new Date(this.endDate);
     const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-    return days * this.listing.price;
+    if (days <= 0) return 0;
+
+    let basePrice = days * this.listing.price;
+
+    // ✅ Apply long rental discount
+    if (days >= 30) {
+      basePrice *= 0.9; // 10% discount
+    } else if (days >= 7) {
+      basePrice *= 0.95; // 5% discount
+    }
+
+    // ✅ Add platform fee (10%)
+    const platformFee = basePrice * 0.1;
+    return basePrice + platformFee;
   }
 
   confirmBooking() {
@@ -45,7 +59,6 @@ export class BookingPageComponent implements OnInit {
   const availableFrom = new Date(this.listing.availableFrom);
   const availableUntil = new Date(this.listing.availableUntil);
 
-  // Validation checks
   if (start < availableFrom || end > availableUntil) {
     alert(`❌ Please choose dates between ${availableFrom.toDateString()} and ${availableUntil.toDateString()}.`);
     return;
@@ -56,28 +69,56 @@ export class BookingPageComponent implements OnInit {
     return;
   }
 
+  // ✅ Prepare booking data (not sent yet)
   const bookingData = {
     listing: this.listing._id,
     startDate: this.startDate,
     endDate: this.endDate,
     notes: this.notes,
-    totalPrice: this.totalPrice
+    totalPrice: this.totalPrice,
+    status: 'pending'
   };
 
-  const token = localStorage.getItem('token');
+  // ✅ Razorpay checkout
+  const options = {
+    key: 'rzp_test_RhBUwUsRvmnv6e',
+    amount: this.totalPrice * 100, // paise
+    currency: 'INR',
+    name: 'Rentify',
+    description: `Booking for ${this.listing.title}`,
+    handler: (response: any) => {
+      console.log('Payment success:', response);
 
-  this.http.post('http://localhost:5000/api/bookings', bookingData, {
-    headers: { Authorization: `Bearer ${token}` }
-  }).subscribe({
-    next: () => {
-      alert('✅ Booking confirmed successfully!');
-      this.router.navigate(['/dashboard']);
+      const token = localStorage.getItem('token');
+      // ✅ Only create booking after payment success
+      this.http.post('http://localhost:5000/api/bookings', 
+        { ...bookingData, paymentId: response.razorpay_payment_id }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      ).subscribe({
+        next: () => {
+          alert('✅ Booking created after payment!');
+          this.router.navigate(['/dashboard']);
+        },
+        error: (err) => {
+          alert('❌ Failed to create booking: ' + (err.error?.error || 'Server error'));
+        }
+      });
     },
-    error: (err) => {
-      alert('❌ Failed to confirm booking: ' + (err.error?.error || 'Server error'));
-    }
-  });
+    prefill: {
+      email: 'user@example.com',
+      contact: '9999999999'
+    },
+    theme: { color: '#22c55e' }
+  };
+
+  const rzp = new (window as any).Razorpay(options);
+  rzp.open();
 }
 
 
+
+  logout() {
+    this.auth.logout();
+    alert('You have been logged out.');
+  }
 }

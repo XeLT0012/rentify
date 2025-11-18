@@ -6,7 +6,11 @@ const { verifyToken } = require('../middleware/authMiddleware');
 // Create a new booking
 router.post('/', verifyToken, async (req, res) => {
   try {
-    const { listing, startDate, endDate, notes, totalPrice } = req.body;
+    const { listing, startDate, endDate, notes, totalPrice, paymentId } = req.body;
+
+    if (!paymentId) {
+      return res.status(400).json({ error: 'Payment ID required' });
+    }
 
     const booking = new Booking({
       listing,
@@ -14,15 +18,19 @@ router.post('/', verifyToken, async (req, res) => {
       startDate,
       endDate,
       notes,
-      totalPrice
+      totalPrice,
+      status: 'pending',   // ✅ stays pending until agent confirms
+      paymentId
     });
 
     await booking.save();
-    res.status(201).json(booking);
+    res.json(booking);
   } catch (err) {
-    res.status(500).json({ error: err.message || 'Failed to create booking' });
+    console.error('🔥 Booking creation error:', err);
+    res.status(500).json({ error: 'Failed to create booking' });
   }
 });
+
 
 // Get all bookings for a user
 router.get('/', verifyToken, async (req, res) => {
@@ -83,6 +91,20 @@ router.put('/:id/status', verifyToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to update booking status', details: err.message });
   }
 });
+
+// Mark booking as paid
+router.put('/:id/paid', verifyToken, async (req, res) => {
+  const booking = await Booking.findById(req.params.id);
+  if (!booking) return res.status(404).json({ error: 'Booking not found' });
+
+  booking.status = 'confirmed'; // ✅ only after payment
+  booking.paymentId = req.body.paymentId;
+  await booking.save();
+
+  res.json({ message: 'Booking marked as paid', booking });
+});
+
+
 
 
 module.exports = router;
