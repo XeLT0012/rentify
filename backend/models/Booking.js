@@ -8,6 +8,7 @@ const bookingSchema = new mongoose.Schema({
   notes: { type: String },
   totalPrice: { type: Number, required: true },
   status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'pending' },
+  paymentId: { type:String }, // Razorpay payment ID
   createdAt: { type: Date, default: Date.now }
 });
 

@@ -1,9 +1,10 @@
 /* Wrapper layout */
 .dashboard-wrapper {
   display: flex;
-  min-height: 100vh;
+  height: 100vh; /* full viewport height */
   background: #f9f9f9;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden; /* prevent double scrollbars */
 }
 
 /* Sidebar */
@@ -12,6 +13,11 @@
   background: #2c3e50;
   color: #fff;
   padding: 20px;
+  flex-shrink: 0; /* sidebar stays fixed width */
+  height: 100vh; /* full height */
+  position: sticky;
+  top: 0; /* stick to top */
+  overflow-y: auto; /* scroll if sidebar content grows */
 }
 
 .sidebar h3 {
@@ -47,6 +53,8 @@
 .dashboard-content {
   flex: 1;
   padding: 30px;
+  overflow-y: auto; /* ✅ enable vertical scrolling */
+  height: 100vh; /* take full height */
 }
 
 .dashboard-content h2 {

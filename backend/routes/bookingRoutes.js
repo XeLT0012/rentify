@@ -19,7 +19,7 @@ router.post('/', verifyToken, async (req, res) => {
       endDate,
       notes,
       totalPrice,
-      status: 'pending',   // ✅ stays pending until agent confirms
+      status: 'pending',   // stays pending until agent confirms
       paymentId
     });
 
@@ -31,22 +31,23 @@ router.post('/', verifyToken, async (req, res) => {
   }
 });
 
-
-// Get all bookings for a user
-router.get('/', verifyToken, async (req, res) => {
+// Get bookings for logged-in renter (My Bookings)
+router.get('/my', verifyToken, async (req, res) => {
   try {
     const bookings = await Booking.find({ renter: req.user.id })
       .populate({
         path: 'listing',
-        select: 'title images price location contactPreference owner',
+        select: 'title price images location contactPreference owner',
         populate: {
           path: 'owner',
           select: 'name email phone'
         }
-      });
+      })
+      .populate('renter', 'name email');
 
     res.json(bookings);
   } catch (err) {
+    console.error('🔥 Error fetching my bookings:', err);
     res.status(500).json({ error: 'Failed to fetch bookings' });
   }
 });
@@ -87,24 +88,31 @@ router.put('/:id/status', verifyToken, async (req, res) => {
 
     res.json({ message: 'Booking status updated successfully', booking });
   } catch (err) {
-    console.error('🔥 Booking update error:', err); // ✅ log actual error
+    console.error('🔥 Booking update error:', err);
     res.status(500).json({ error: 'Failed to update booking status', details: err.message });
   }
 });
 
 // Mark booking as paid
 router.put('/:id/paid', verifyToken, async (req, res) => {
-  const booking = await Booking.findById(req.params.id);
-  if (!booking) return res.status(404).json({ error: 'Booking not found' });
+  try {
+    const { paymentId } = req.body;
+    if (!paymentId) {
+      return res.status(400).json({ error: 'Payment ID required' });
+    }
 
-  booking.status = 'confirmed'; // ✅ only after payment
-  booking.paymentId = req.body.paymentId;
-  await booking.save();
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) return res.status(404).json({ error: 'Booking not found' });
 
-  res.json({ message: 'Booking marked as paid', booking });
+    booking.status = 'confirmed'; // only after payment
+    booking.paymentId = paymentId;
+    await booking.save();
+
+    res.json({ message: 'Booking marked as paid', booking });
+  } catch (err) {
+    console.error('🔥 Error marking booking as paid:', err);
+    res.status(500).json({ error: 'Failed to mark booking as paid' });
+  }
 });
-
-
-
 
 module.exports = router;

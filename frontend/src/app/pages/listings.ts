@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';   // ✅ Needed for ngModel
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-listings',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],  // ✅ Include FormsModule
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './listings.html',
   styleUrls: ['./listings.scss']
 })
@@ -41,33 +41,33 @@ export class ListingsComponent implements OnInit {
     });
   }
 
-  // 🔹 Open listing in modal
+  // 🔹 Open listing in modal (without image)
   openListing(listing: any) {
-    this.expandedListing = { ...listing }; // clone to avoid direct mutation
+    this.expandedListing = { ...listing };
     this.isEditMode = false;
 
     const token = localStorage.getItem('token');
     this.http.get<any[]>(`http://localhost:5000/api/bookings/listing/${listing._id}`, {
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe({
-      next: data => this.expandedBookings = data,
+      next: data => {
+        // ✅ bookings now include renter details
+        this.expandedBookings = data;
+      },
       error: err => console.error('Error fetching bookings:', err)
     });
   }
 
-  // 🔹 Close modal
   closeModal() {
     this.expandedListing = null;
     this.expandedBookings = [];
     this.isEditMode = false;
   }
 
-  // 🔹 Enable edit mode
   enableEdit() {
     this.isEditMode = true;
   }
 
-  // 🔹 Save edits
   saveListing() {
     if (!this.expandedListing) return;
 
@@ -77,10 +77,9 @@ export class ListingsComponent implements OnInit {
       { headers: { Authorization: `Bearer ${token}` } }
     ).subscribe({
       next: updated => {
-        // Update local list
         this.listings = this.listings.map((l: any) =>
-  l._id === (updated as any)._id ? updated : l
-);
+          l._id === (updated as any)._id ? updated : l
+        );
         this.expandedListing = updated;
         this.isEditMode = false;
         alert('Listing updated successfully.');
@@ -92,28 +91,25 @@ export class ListingsComponent implements OnInit {
     });
   }
 
-  // 🔹 Delete listing
   deleteListing(id: string) {
-  if (confirm('Are you sure you want to delete this listing?')) {
-    const token = localStorage.getItem('token');
-    this.http.delete(`http://localhost:5000/api/listings/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    }).subscribe({
-      next: () => {
-        this.listings = this.listings.filter(l => l._id !== id);
-        this.closeModal();
-        alert('Listing deleted successfully.');
-      },
-      error: err => {
-  alert(err.error?.error || 'Failed to delete listing (Booking may already present).');
-  console.error('Error deleting listing:', err);
-}
-    });
+    if (confirm('Are you sure you want to delete this listing?')) {
+      const token = localStorage.getItem('token');
+      this.http.delete(`http://localhost:5000/api/listings/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).subscribe({
+        next: () => {
+          this.listings = this.listings.filter(l => l._id !== id);
+          this.closeModal();
+          alert('Listing deleted successfully.');
+        },
+        error: err => {
+          alert(err.error?.error || 'Failed to delete listing (Booking may already present).');
+          console.error('Error deleting listing:', err);
+        }
+      });
+    }
   }
-}
 
-
-  // 🔹 Confirm booking
   confirmBooking(bookingId: string) {
     const token = localStorage.getItem('token');
     this.http.put(`http://localhost:5000/api/bookings/${bookingId}/status`,
@@ -127,7 +123,6 @@ export class ListingsComponent implements OnInit {
     });
   }
 
-  // 🔹 Reject booking
   rejectBooking(bookingId: string) {
     const token = localStorage.getItem('token');
     this.http.put(`http://localhost:5000/api/bookings/${bookingId}/status`,
@@ -141,7 +136,6 @@ export class ListingsComponent implements OnInit {
     });
   }
 
-  // 🔹 Logout
   logout() {
     this.auth.logout();
     alert('You have been logged out.');

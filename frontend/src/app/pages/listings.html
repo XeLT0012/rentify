@@ -28,12 +28,12 @@
 <!-- Modal Popup -->
 <div class="modal" *ngIf="expandedListing">
   <div class="modal-content">
-    <span class="close" (click)="closeModal()">×</span>
+    <span class="cancel-btn" (click)="closeModal()">× Cancel</span>
 
     <!-- Normal view -->
     <div *ngIf="!isEditMode">
       <h2>{{ expandedListing.title }}</h2>
-      <img [src]="'http://localhost:5000' + expandedListing.images[0]" alt="Listing image">
+      <!-- ❌ Removed image here -->
       <p>{{ expandedListing.description }}</p>
       <strong>₹{{ expandedListing.price }}</strong>
       <p><em>Category:</em> {{ expandedListing.category }}</p>
@@ -47,10 +47,18 @@
 
       <h3>Bookings for this product:</h3>
       <div *ngFor="let booking of expandedBookings" class="booking">
-        <p><strong>Renter:</strong> {{ booking.renter?.name }} ({{ booking.renter?.email }})</p>
-        <p>Status: {{ booking.status }}</p>
-        <button (click)="confirmBooking(booking._id)">✅ Confirm</button>
-        <button (click)="rejectBooking(booking._id)">❌ Reject</button>
+        <p><strong>Renter Name:</strong> {{ booking.renter?.name }}</p>
+        <p><strong>Email:</strong> {{ booking.renter?.email }}</p>
+        <p><strong>Phone:</strong> {{ booking.renter?.phone }}</p>
+        <p><strong>Status:</strong> {{ booking.status }}</p>
+        <p><strong>Total Price:</strong> ₹{{ booking.totalPrice }}</p>
+        <p *ngIf="booking.paymentId"><strong>Payment ID:</strong> {{ booking.paymentId }}</p>
+        <p><strong>Booked On:</strong> {{ booking.createdAt | date:'medium' }}</p>
+
+        <div class="booking-actions">
+          <button (click)="confirmBooking(booking._id)" [disabled]="booking.status === 'confirmed'">✅ Confirm</button>
+          <button (click)="rejectBooking(booking._id)" [disabled]="booking.status === 'cancelled'">❌ Reject</button>
+        </div>
       </div>
     </div>
 
