@@ -69,7 +69,7 @@ export class BookingPageComponent implements OnInit {
     return;
   }
 
-  // ✅ Prepare booking data (not sent yet)
+  // ✅ Prepare booking data
   const bookingData = {
     listing: this.listing._id,
     startDate: this.startDate,
@@ -87,19 +87,36 @@ export class BookingPageComponent implements OnInit {
     name: 'Rentify',
     description: `Booking for ${this.listing.title}`,
     handler: (response: any) => {
-      console.log('Payment success:', response);
+      console.log('✅ Razorpay payment success:', response);
 
       const token = localStorage.getItem('token');
-      // ✅ Only create booking after payment success
-      this.http.post('http://localhost:5000/api/bookings', 
-        { ...bookingData, paymentId: response.razorpay_payment_id }, 
+
+      // Step 1: Create booking
+      this.http.post('http://localhost:5000/api/bookings',
+        { ...bookingData, paymentId: response.razorpay_payment_id },
         { headers: { Authorization: `Bearer ${token}` } }
       ).subscribe({
-        next: () => {
-          alert('✅ Booking created after payment!');
-          this.router.navigate(['/dashboard']);
+        next: (createdBooking: any) => {
+          console.log('✅ Booking created:', createdBooking);
+
+          // Step 2: Mark booking as paid (triggers email)
+          this.http.put(`http://localhost:5000/api/bookings/${createdBooking._id}/paid`,
+            { paymentId: response.razorpay_payment_id },
+            { headers: { Authorization: `Bearer ${token}` } }
+          ).subscribe({
+            next: () => {
+              console.log('📩 Booking marked as paid & email sent');
+              alert('✅ Booking confirmed and email sent!');
+              this.router.navigate(['/dashboard']);
+            },
+            error: (err) => {
+              console.error('🔥 Failed to mark booking as paid:', err);
+              alert('❌ Booking created but failed to send confirmation email.');
+            }
+          });
         },
         error: (err) => {
+          console.error('🔥 Failed to create booking:', err);
           alert('❌ Failed to create booking: ' + (err.error?.error || 'Server error'));
         }
       });
@@ -114,8 +131,6 @@ export class BookingPageComponent implements OnInit {
   const rzp = new (window as any).Razorpay(options);
   rzp.open();
 }
-
-
 
   logout() {
     this.auth.logout();

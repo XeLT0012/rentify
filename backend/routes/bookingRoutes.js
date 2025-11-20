@@ -94,25 +94,35 @@ router.put('/:id/status', verifyToken, async (req, res) => {
 });
 
 // Mark booking as paid
+const { sendBookingConfirmation } = require('../mailer');
+
 router.put('/:id/paid', verifyToken, async (req, res) => {
+  console.log("📩 /paid route triggered");
   try {
     const { paymentId } = req.body;
     if (!paymentId) {
       return res.status(400).json({ error: 'Payment ID required' });
     }
 
-    const booking = await Booking.findById(req.params.id);
+    const booking = await Booking.findById(req.params.id)
+      .populate({ path: 'listing', populate: { path: 'owner', select: 'name email phone' } })
+      .populate('renter', 'name email');
+
     if (!booking) return res.status(404).json({ error: 'Booking not found' });
 
-    booking.status = 'confirmed'; // only after payment
+    booking.status = 'confirmed';
     booking.paymentId = paymentId;
     await booking.save();
 
-    res.json({ message: 'Booking marked as paid', booking });
+    // ✅ Only call sendBookingConfirmation once
+    await sendBookingConfirmation(booking.renter.email, booking);
+
+    res.json({ message: 'Booking marked as paid & email sent', booking });
   } catch (err) {
-    console.error('🔥 Error marking booking as paid:', err);
+    console.error("🔥 Error in /paid route:", err);
     res.status(500).json({ error: 'Failed to mark booking as paid' });
   }
 });
+
 
 module.exports = router;
