@@ -64,6 +64,19 @@ router.get('/my-listings', verifyToken, async (req, res) => {
   }
 });
 
+// Get featured listings for home page
+router.get('/featured', async (req, res) => {
+  try {
+    const listings = await Listing.find({ featured: true })
+      .populate('owner', 'name email');
+    res.json(listings);
+  } catch (err) {
+    console.error('🔥 Error fetching featured listings:', err);
+    res.status(500).json({ error: 'Failed to fetch featured listings' });
+  }
+});
+
+
 // Get single listing
 router.get('/:id', async (req, res) => {
   try {
@@ -94,6 +107,32 @@ router.put('/:id', verifyToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to update listing' });
   }
 });
+
+// Mark listing as featured (admin only)
+router.put('/:id/featured', verifyToken, async (req, res) => {
+  try {
+    // ✅ Ensure only admin can update
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const listing = await Listing.findByIdAndUpdate(
+      req.params.id,
+      { featured: true },
+      { new: true }
+    );
+
+    if (!listing) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
+
+    res.json({ message: 'Listing marked as featured', listing });
+  } catch (err) {
+    console.error('🔥 Error marking listing as featured:', err);
+    res.status(500).json({ error: 'Failed to update listing' });
+  }
+});
+
 
 // Delete listing (only if no active bookings exist)
 router.delete('/:id', verifyToken, async (req, res) => {

@@ -110,7 +110,6 @@ router.put('/:id/paid', verifyToken, async (req, res) => {
 
     if (!booking) return res.status(404).json({ error: 'Booking not found' });
 
-    booking.status = 'confirmed';
     booking.paymentId = paymentId;
     await booking.save();
 
