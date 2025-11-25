@@ -3,17 +3,19 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { HttpClient } from '@angular/common/http';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../services/auth'; // Adjust path if needed
+import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule], // ✅ Removed HttpClientModule
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrls: ['./login.scss']
 })
 export class LoginComponent implements OnInit {
   form!: FormGroup;
+  forgotForm!: FormGroup;
+  showForgot = false;
 
   constructor(
     private fb: FormBuilder,
@@ -23,36 +25,53 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // ✅ Login form
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
+
+    // ✅ Forgot password form (email only)
+    this.forgotForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]]
+    });
   }
 
+  // ✅ Login
   login(): void {
-  if (this.form.invalid) return;
+    if (this.form.invalid) return;
 
-  this.http.post<any>('http://localhost:5000/api/users/login', this.form.value)
-    .subscribe({
-      next: res => {
-        // ✅ Save only token, userId, and role
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('user', JSON.stringify({
-          _id: res.user._id,
-          role: res.user.role
-        }));
+    this.http.post<any>('http://localhost:5000/api/users/login', this.form.value)
+      .subscribe({
+        next: res => {
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('user', JSON.stringify({ _id: res.user._id, role: res.user.role }));
+          this.auth.login(res.token, res.user.role);
+          alert('Login successful!');
+          this.router.navigate([res.user.role === 'admin' ? '/admin' : '/dashboard']);
+        },
+        error: err => {
+          alert('Login failed. Please check your credentials.');
+          console.error('Login failed:', err);
+        }
+      });
+  }
 
-        // ✅ Use role for redirect
-        this.auth.login(res.token, res.user.role);
+  // ✅ Forgot Password → Send reset code and redirect
+  sendCode(): void {
+    if (this.forgotForm.invalid) return;
 
-        alert('Login successful!');
-        this.router.navigate([res.user.role === 'admin' ? '/admin' : '/dashboard']);
-      },
-      error: err => {
-        alert('Login failed. Please check your credentials.');
-        console.error('Login failed:', err);
-      }
-    });
-}
-
+    this.http.post<any>('http://localhost:5000/api/users/forgot-password', this.forgotForm.value)
+      .subscribe({
+        next: res => {
+          alert(res.message);
+          // ✅ Redirect to reset-password page with email in query params
+          this.router.navigate(['/reset-password'], { queryParams: { email: this.forgotForm.value.email } });
+        },
+        error: err => {
+          alert(err.error?.error || 'Failed to send reset code.');
+          console.error('Forgot password error:', err);
+        }
+      });
+  }
 }

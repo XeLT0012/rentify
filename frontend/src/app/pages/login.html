@@ -1,13 +1,66 @@
 <section class="auth-container">
-  <h2>Login to Rentify</h2>
-  <form [formGroup]="form" (ngSubmit)="login()">
-    <label>Email</label>
-    <input type="email" formControlName="email" placeholder="Enter your email" />
+  <h2>🔑 Login to Rentify</h2>
 
-    <label>Password</label>
-    <input type="password" formControlName="password" placeholder="Enter your password" />
+  <!-- Login Form -->
+  <form *ngIf="!showForgot" [formGroup]="form" (ngSubmit)="login()" novalidate>
+    <!-- Email -->
+    <div class="form-group">
+      <label for="login-email">Email</label>
+      <input id="login-email" type="email" formControlName="email" placeholder="Enter your email" />
+      <small class="rules">Must be a valid email address.</small>
+      <small class="error" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('required')">
+        Email is required.
+      </small>
+      <small class="error" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('email')">
+        Please enter a valid email.
+      </small>
+    </div>
 
-    <button type="submit" [disabled]="form.invalid">Login</button>
+    <!-- Password -->
+    <div class="form-group">
+      <label for="login-password">Password</label>
+      <input id="login-password" type="password" formControlName="password" placeholder="Enter your password" />
+      <small class="rules">Password is required.</small>
+      <small class="error" *ngIf="form.get('password')?.touched && form.get('password')?.hasError('required')">
+        Password is required.
+      </small>
+    </div>
+
+    <!-- Submit -->
+    <button type="submit" [disabled]="form.invalid" [class.disabled]="form.invalid">
+      Login
+    </button>
+    <p class="disabled-msg" *ngIf="form.invalid">
+      ⚠️ Please fill in all fields correctly before logging in.
+    </p>
+
+    <p>
+      <a (click)="showForgot = true" style="cursor:pointer;">Forgot Password?</a>
+    </p>
     <p>Don't have an account? <a routerLink="/register">Register here</a></p>
+  </form>
+
+  <!-- Forgot Password Form -->
+  <form *ngIf="showForgot" [formGroup]="forgotForm" (ngSubmit)="sendCode()" novalidate>
+    <div class="form-group">
+      <label for="forgot-email">Email</label>
+      <input id="forgot-email" type="email" formControlName="email" placeholder="Enter your email" />
+      <small class="rules">Must be a valid email address.</small>
+      <small class="error" *ngIf="forgotForm.get('email')?.touched && forgotForm.get('email')?.hasError('required')">
+        Email is required.
+      </small>
+      <small class="error" *ngIf="forgotForm.get('email')?.touched && forgotForm.get('email')?.hasError('email')">
+        Please enter a valid email.
+      </small>
+    </div>
+
+    <button type="submit" [disabled]="forgotForm.invalid" [class.disabled]="forgotForm.invalid">
+      Send Reset Code
+    </button>
+    <p class="disabled-msg" *ngIf="forgotForm.invalid">
+      ⚠️ Please enter a valid email to receive a reset code.
+    </p>
+
+    <p><a (click)="showForgot = false" style="cursor:pointer;">Back to Login</a></p>
   </form>
 </section>

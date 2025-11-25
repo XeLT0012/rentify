@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -13,12 +13,16 @@ import { HttpClient } from '@angular/common/http';
 export class HomeComponent {
   featuredListings: any[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
-    this.http.get<any[]>('http://localhost:5000/api/listings')
+    this.http.get<any[]>('http://localhost:5000/api/listings/featured')
       .subscribe(data => {
-        this.featuredListings = data.filter(item => item.isFeatured);
+        this.featuredListings = data;
       });
+  }
+
+  redirectToLogin() {
+    this.router.navigate(['/login']);
   }
 }

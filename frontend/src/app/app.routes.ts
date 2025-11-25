@@ -15,6 +15,7 @@ import { authGuard } from './guards/auth-guard';
 import { roleGuard } from './guards/role-guard';
 
 import { NotFoundComponent } from './pages/not-found';
+import { ResetPasswordComponent } from './auth/reset-password/reset-password';
 
 
 export const routes: Routes = [
@@ -29,5 +30,6 @@ export const routes: Routes = [
   { path: 'booking/:id', component: BookingPageComponent , canActivate: [authGuard, roleGuard('user')] },
   { path: 'bookings', component: MyBookingsComponent , canActivate: [authGuard, roleGuard('user')] },
   { path: 'checkout', component: CheckoutComponent , canActivate: [authGuard, roleGuard('user')] },
+  { path: 'reset-password', component: ResetPasswordComponent },
   { path: '**', component: NotFoundComponent } // ✅ Catch-all 404
 ];

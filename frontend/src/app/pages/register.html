@@ -1,22 +1,65 @@
 <section class="auth-container">
-  <h2>Create an Account</h2>
-  <form [formGroup]="form" (ngSubmit)="register()">
-    <label>Name</label>
-    <input type="text" formControlName="name" placeholder="Your full name" />
+  <h2>📝 Create an Account</h2>
 
-    <label>Email</label>
-    <input type="email" formControlName="email" placeholder="Your email" />
+  <form [formGroup]="form" (ngSubmit)="register()" novalidate>
+    <!-- Name -->
+    <div class="form-group">
+      <label for="register-name">Name</label>
+      <input id="register-name" type="text" formControlName="name" placeholder="Your full name" />
+      <small class="rules">Name is required.</small>
+      <small class="error" *ngIf="form.get('name')?.touched && form.get('name')?.hasError('required')">
+        Name is required.
+      </small>
+    </div>
 
-    <label>Password</label>
-    <input type="password" formControlName="password" placeholder="Choose a password" />
+    <!-- Email -->
+    <div class="form-group">
+      <label for="register-email">Email</label>
+      <input id="register-email" type="email" formControlName="email" placeholder="Your email" />
+      <small class="rules">Must be a valid email address.</small>
+      <small class="error" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('required')">
+        Email is required.
+      </small>
+      <small class="error" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('email')">
+        Please enter a valid email.
+      </small>
+    </div>
 
-    <label>Role</label>
-    <select formControlName="role">
-      <option value="user">User</option>
-      <option value="admin">Admin</option>
-    </select>
+    <!-- Password -->
+    <div class="form-group">
+      <label for="register-password">Password</label>
+      <input id="register-password" type="password" formControlName="password" placeholder="Choose a password" />
+      <small class="rules">Password must be at least 6 characters long.</small>
+      <small class="error" *ngIf="form.get('password')?.touched && form.get('password')?.hasError('required')">
+        Password is required.
+      </small>
+      <small class="error" *ngIf="form.get('password')?.touched && form.get('password')?.hasError('minlength')">
+        Password must be at least 6 characters.
+      </small>
+    </div>
 
-    <button type="submit" [disabled]="form.invalid">Register</button>
+    <!-- Role -->
+    <div class="form-group">
+      <label for="register-role">Role</label>
+      <select id="register-role" formControlName="role">
+        <option value="">Select a role</option>
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+      <small class="rules">Role selection is required.</small>
+      <small class="error" *ngIf="form.get('role')?.touched && form.get('role')?.hasError('required')">
+        Please select a role.
+      </small>
+    </div>
+
+    <!-- Submit -->
+    <button type="submit" [disabled]="form.invalid" [class.disabled]="form.invalid">
+      Register
+    </button>
+    <p class="disabled-msg" *ngIf="form.invalid">
+      ⚠️ Please fill in all fields correctly before registering.
+    </p>
+
     <p>Already have an account? <a routerLink="/login">Login here</a></p>
   </form>
 </section>

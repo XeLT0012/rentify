@@ -71,7 +71,6 @@ router.get('/featured', async (req, res) => {
       .populate('owner', 'name email');
     res.json(listings);
   } catch (err) {
-    console.error('🔥 Error fetching featured listings:', err);
     res.status(500).json({ error: 'Failed to fetch featured listings' });
   }
 });

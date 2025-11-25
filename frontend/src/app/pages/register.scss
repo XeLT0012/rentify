@@ -1,8 +1,94 @@
-@use './login.scss' as *; // Reuse styles from login
+.auth-container {
+  max-width: 400px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 
-.auth-container select {
-  padding: 0.5rem;
-  margin-top: 0.3rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+
+  .form-group {
+    margin-bottom: 1.2rem;
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      transition: border-color 0.2s;
+
+      &:focus {
+        border-color: #007bff;
+        outline: none;
+      }
+    }
+
+    .rules {
+      font-size: 0.8rem;
+      color: #555;
+      margin-top: 0.2rem;
+      display: block;
+    }
+
+    .error {
+      font-size: 0.8rem;
+      color: #d9534f;
+      margin-top: 0.2rem;
+      display: block;
+    }
+  }
+
+  button {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover:not(.disabled) {
+      background-color: #0056b3;
+    }
+
+    &.disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+
+  .disabled-msg {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: #d9534f;
+    text-align: center;
+  }
+
+  p {
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }

@@ -11,13 +11,19 @@
 
 <!-- Featured Listings -->
 <section class="featured">
-  <h2>Featured Listings</h2>
+  <h2>🌟 Featured Listings</h2>
   <div class="listing-grid">
-    <div *ngFor="let item of featuredListings" class="card">
-      <img [src]="'http://localhost:5000' + item.imageUrl" alt="{{ item.title }}" />
+    <div *ngFor="let item of featuredListings" class="card" (click)="redirectToLogin()">
+      <img [src]="'http://localhost:5000' + item.images[0]" alt="{{ item.title }}" />
       <h3>{{ item.title }}</h3>
-      <p>₹{{ item.price }} / day</p>
+      <p class="price">₹{{ item.price }} / day</p>
+      <p class="location">📍 {{ item.location }}</p>
+      <p class="condition">Condition: {{ item.condition }}</p>
+      <p class="delivery">🚚 {{ item.deliveryOption | titlecase }}</p>
     </div>
   </div>
-</section>
 
+  <div *ngIf="featuredListings.length === 0" class="no-listings">
+    <p>No featured listings available at the moment.</p>
+  </div>
+</section>
