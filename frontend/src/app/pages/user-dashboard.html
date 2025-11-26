@@ -32,7 +32,7 @@
     <div class="listing-card" *ngFor="let item of filteredListings" (click)="openPopup(item)">
       <img [src]="'http://localhost:5000' + item.images[0]" alt="Listing image">
       <h3>{{ item.title }}</h3>
-      <strong>₹{{ item.price }}</strong>
+      <strong>₹{{ item.price }}/day</strong>
       <p><em>{{ item.category }}</em></p>
     </div>
   </div>
@@ -50,6 +50,8 @@
 
       <h3>{{ selectedListing.title }}</h3>
       <p>{{ selectedListing.description }}</p>
+      <p><strong>Price:</strong> ₹{{ selectedListing.price }} /day</p>
+      <p><strong>Category:</strong> {{ selectedListing.category }}</p>
       <p><strong>Condition:</strong> {{ selectedListing.condition }}</p>
       <p><strong>Location:</strong> {{ selectedListing.location }}</p>
       <p><strong>Available:</strong> {{ selectedListing.availableFrom | date }} to {{ selectedListing.availableUntil | date }}</p>

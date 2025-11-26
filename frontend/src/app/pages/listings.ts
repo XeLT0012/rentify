@@ -14,32 +14,41 @@ import { AuthService } from '../services/auth';
 })
 export class ListingsComponent implements OnInit {
   listings: any[] = [];
-  expandedListing: any | null = null;
-  expandedBookings: any[] = [];
-  isEditMode: boolean = false;
+expandedListing: any | null = null;
+expandedBookings: any[] = [];
+isEditMode: boolean = false;
 
-  constructor(
-    private http: HttpClient,
-    private auth: AuthService,
-    private router: Router
-  ) {}
+constructor(
+  private http: HttpClient,
+  private auth: AuthService,
+  private router: Router
+) {}
 
-  ngOnInit(): void {
-    const token = localStorage.getItem('token');
-    this.http.get<any[]>('http://localhost:5000/api/listings/my-listings', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .subscribe({
-      next: data => {
-        console.log('My Listings:', data);
-        this.listings = data;
-      },
-      error: err => {
-        alert('Failed to load your listings.');
-        console.error('Error fetching listings:', err);
-      }
-    });
-  }
+ngOnInit(): void {
+  const token = localStorage.getItem('token');
+  this.http.get<any[]>('http://localhost:5000/api/listings/my-listings', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  .subscribe({
+    next: data => {
+      console.log('My Listings:', data);
+
+      // ✅ Show all listings created by the current user
+      // (pending, approved, rejected)
+      this.listings = data.map(item => {
+        return {
+          ...item,
+          approvalStatus: item.approvalStatus || 'pending' // fallback if missing
+        };
+      });
+    },
+    error: err => {
+      alert('Failed to load your listings.');
+      console.error('Error fetching listings:', err);
+    }
+  });
+}
+
 
   // 🔹 Open listing in modal (without image)
   openListing(listing: any) {

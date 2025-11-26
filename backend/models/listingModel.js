@@ -36,13 +36,25 @@ const listingSchema = new mongoose.Schema({
     required: true 
   },
 
+  // Vendor-specific details (optional, only if role === 'vendor')
+  shopLocation: { type: String },
+  experience: { type: String },
+  certifications: { type: String },
+
   // 📸 Media
-  images: [{ type: String }], // store file paths
+  images: [{ type: String }],
 
   // ✅ Trust & Safety
   terms: { type: String },
 
   featured: { type: Boolean, default: false },
+
+  // 🔒 Admin Approval
+  approvalStatus: { 
+    type: String, 
+    enum: ['pending', 'approved', 'rejected'], 
+    default: 'pending' 
+  },
 
   createdAt: { type: Date, default: Date.now }
 });

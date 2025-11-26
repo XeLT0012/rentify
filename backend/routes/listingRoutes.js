@@ -10,23 +10,52 @@ router.post('/', verifyToken, imageUpload.array('images', 5), async (req, res) =
   try {
     const images = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
-    const listing = new Listing({
-      title: req.body.title,
-      category: req.body.category,
-      description: req.body.description,
-      condition: req.body.condition,
-      price: req.body.price,
-      availableFrom: req.body.availableFrom,
-      availableUntil: req.body.availableUntil,
-      deliveryOption: req.body.deliveryOption,
-      location: req.body.location,
-      owner: req.user.id,
-      contactPreference: req.body.contactPreference,
-      images,
-      terms: req.body.terms
-    });
+    const {
+      title,
+      category,
+      description,
+      condition,
+      price,
+      availableFrom,
+      availableUntil,
+      deliveryOption,
+      location,
+      contactPreference,
+      terms,
+      userType,
+      shopLocation,
+      experience,
+      certifications
+    } = req.body;
 
+    const listingData = {
+      title,
+      category,
+      description,
+      condition,
+      price,
+      availableFrom,
+      availableUntil,
+      deliveryOption,
+      location,
+      owner: req.user.id,
+      contactPreference,
+      images,
+      terms,
+      approvalStatus: 'pending', // ✅ default to pending
+      userType
+    };
+
+    // ✅ Add vendor-specific fields only if userType is vendor
+    if (userType === 'vendor') {
+      listingData.shopLocation = shopLocation;
+      listingData.experience = experience;
+      listingData.certifications = certifications;
+    }
+
+    const listing = new Listing(listingData);
     await listing.save();
+
     res.status(201).json(listing);
   } catch (err) {
     console.error('🔥 Listing creation error:', err);
@@ -34,17 +63,18 @@ router.post('/', verifyToken, imageUpload.array('images', 5), async (req, res) =
   }
 });
 
-// Get all listings
+// Get all listings (only approved for public)
 router.get('/', async (req, res) => {
   try {
-    const listings = await Listing.find().populate('owner', 'name email');
+    const listings = await Listing.find({ approvalStatus: 'approved' })
+      .populate('owner', 'name email');
     res.json(listings);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch listings' });
   }
 });
 
-// Get listings created by logged-in user
+// Get listings created by logged-in user (show all, even pending/rejected)
 router.get('/my-listings', verifyToken, async (req, res) => {
   try {
     const now = new Date();
@@ -63,6 +93,36 @@ router.get('/my-listings', verifyToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch listings' });
   }
 });
+
+// Admin approval route
+router.put('/:id/approve', verifyToken, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const { status } = req.body; // expected: 'approved' or 'rejected'
+    if (!['approved', 'rejected'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid approval status' });
+    }
+
+    const listing = await Listing.findByIdAndUpdate(
+      req.params.id,
+      { approvalStatus: status },
+      { new: true }
+    );
+
+    if (!listing) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
+
+    res.json({ message: `Listing ${status}`, listing });
+  } catch (err) {
+    console.error('🔥 Error updating approval status:', err);
+    res.status(500).json({ error: 'Failed to update approval status' });
+  }
+});
+
 
 // Get featured listings for home page
 router.get('/featured', async (req, res) => {

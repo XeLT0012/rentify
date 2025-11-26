@@ -18,9 +18,19 @@
       <img [src]="'http://localhost:5000' + item.images[0]" alt="Listing image">
       <h3>{{ item.title }}</h3>
       <p>{{ item.description }}</p>
-      <strong>₹{{ item.price }}</strong>
+      <strong>₹{{ item.price }}/day</strong>
       <p><em>Category:</em> {{ item.category }}</p>
       <small>Posted by: {{ item.owner?.name }}</small>
+
+      <!-- ✅ Approval status badge -->
+      <span class="badge"
+            [ngClass]="{
+              'pending': item.approvalStatus === 'pending',
+              'approved': item.approvalStatus === 'approved',
+              'rejected': item.approvalStatus === 'rejected'
+            }">
+        {{ item.approvalStatus }}
+      </span>
     </div>
   </div>
 </section>
@@ -33,12 +43,30 @@
     <!-- Normal view -->
     <div *ngIf="!isEditMode">
       <h2>{{ expandedListing.title }}</h2>
-      <!-- ❌ Removed image here -->
       <p>{{ expandedListing.description }}</p>
-      <strong>₹{{ expandedListing.price }}</strong>
+      <strong>₹{{ expandedListing.price }}/day</strong>
       <p><em>Category:</em> {{ expandedListing.category }}</p>
       <p><em>Location:</em> {{ expandedListing.location }}</p>
       <p><em>Contact Preference:</em> {{ expandedListing.contactPreference }}</p>
+
+      <!-- ✅ Vendor-specific details -->
+      <div *ngIf="expandedListing.userType === 'vendor'">
+        <p><em>Shop Location:</em> {{ expandedListing.shopLocation }}</p>
+        <p><em>Experience:</em> {{ expandedListing.experience }}</p>
+        <p *ngIf="expandedListing.certifications"><em>Certifications:</em> {{ expandedListing.certifications }}</p>
+      </div>
+
+      <!-- ✅ Approval status -->
+      <p><strong>Status:</strong> 
+        <span class="badge"
+              [ngClass]="{
+                'pending': expandedListing.approvalStatus === 'pending',
+                'approved': expandedListing.approvalStatus === 'approved',
+                'rejected': expandedListing.approvalStatus === 'rejected'
+              }">
+          {{ expandedListing.approvalStatus }}
+        </span>
+      </p>
 
       <div class="actions">
         <button (click)="enableEdit()">✏️ Edit</button>
@@ -51,7 +79,7 @@
         <p><strong>Email:</strong> {{ booking.renter?.email }}</p>
         <p><strong>Phone:</strong> {{ booking.renter?.phone }}</p>
         <p><strong>Status:</strong> {{ booking.status }}</p>
-        <p><strong>Total Price:</strong> ₹{{ booking.totalPrice }}</p>
+        <p><strong>Total Price:</strong> ₹{{ booking.totalPrice }}/day</p>
         <p *ngIf="booking.paymentId"><strong>Payment ID:</strong> {{ booking.paymentId }}</p>
         <p><strong>Booked On:</strong> {{ booking.createdAt | date:'medium' }}</p>
 
@@ -77,6 +105,18 @@
 
         <label>Location</label>
         <input [(ngModel)]="expandedListing.location" name="location">
+
+        <!-- ✅ Vendor-specific edit fields -->
+        <div *ngIf="expandedListing.userType === 'vendor'">
+          <label>Shop Location</label>
+          <input [(ngModel)]="expandedListing.shopLocation" name="shopLocation">
+
+          <label>Experience</label>
+          <input [(ngModel)]="expandedListing.experience" name="experience">
+
+          <label>Certifications</label>
+          <input [(ngModel)]="expandedListing.certifications" name="certifications">
+        </div>
 
         <button type="button" (click)="saveListing()">💾 Save</button>
         <button type="button" (click)="isEditMode=false">Cancel</button>

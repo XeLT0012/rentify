@@ -31,6 +31,12 @@ export class AddListingComponent {
   // 👤 Owner Information
   contactPreference = '';
 
+  // Vendor-specific
+userType = ''; // 'vendor' or 'standalone'
+shopLocation = '';
+experience = '';
+certifications = '';
+
   // 📸 Media
   imageFiles: File[] = [];
 
@@ -44,53 +50,58 @@ export class AddListingComponent {
   }
 
   submit() {
-    const token = localStorage.getItem('token');
-    if (!token) return alert('You must be logged in.');
+  const token = localStorage.getItem('token');
+  if (!token) return alert('You must be logged in.');
 
-    if (!this.title || !this.category || !this.price || !this.condition || !this.location) {
-      return alert('Please fill all required fields.');
-    }
-
-    const formData = new FormData();
-    // 📝 Essential Item Details
-    formData.append('title', this.title);
-    formData.append('category', this.category);
-    formData.append('description', this.description);
-    formData.append('condition', this.condition);
-
-    // 💰 Rental Information
-    formData.append('price', this.price.toString());
-    if (this.availableFrom) formData.append('availableFrom', this.availableFrom);
-    if (this.availableUntil) formData.append('availableUntil', this.availableUntil);
-
-    // 📍 Location & Logistics
-    formData.append('deliveryOption', this.deliveryOption);
-    formData.append('location', this.location);
-
-    // 👤 Owner Information
-    formData.append('contactPreference', this.contactPreference);
-
-    // 📸 Media
-    this.imageFiles.forEach(file => formData.append('images', file));
-
-    // ✅ Trust & Safety
-    formData.append('terms', this.terms);
-
-    this.http.post('http://localhost:5000/api/listings', formData, {
-      headers: { Authorization: `Bearer ${token}` }
-    }).subscribe({
-      next: () => {
-        alert('Listing created successfully!');
-        this.router.navigate(['/listings']);
-      },
-      error: err => {
-        console.error('🔥 Full backend error:', err.error);
-        const message = err.error?.error || err.error?.message || 'Unknown error';
-        const details = err.error?.details ? JSON.stringify(err.error.details) : '';
-        alert(`Error ${err.status}: ${message}\n${details}`);
-      }
-    });
+  if (!this.title || !this.category || !this.price || !this.condition || !this.location) {
+    return alert('Please fill all required fields.');
   }
+
+  // If vendor, enforce vendor-specific fields
+  if (this.userType === 'vendor' && (!this.shopLocation || !this.experience)) {
+    return alert('Vendor details are required.');
+  }
+
+  const formData = new FormData();
+  formData.append('title', this.title);
+  formData.append('category', this.category);
+  formData.append('description', this.description);
+  formData.append('condition', this.condition);
+  formData.append('price', this.price.toString());
+  if (this.availableFrom) formData.append('availableFrom', this.availableFrom);
+  if (this.availableUntil) formData.append('availableUntil', this.availableUntil);
+  formData.append('deliveryOption', this.deliveryOption);
+  formData.append('location', this.location);
+  formData.append('contactPreference', this.contactPreference);
+
+  // Vendor-specific fields
+  formData.append('userType', this.userType);
+  if (this.userType === 'vendor') {
+    formData.append('shopLocation', this.shopLocation);
+    formData.append('experience', this.experience);
+    if (this.certifications) formData.append('certifications', this.certifications);
+  }
+
+  this.imageFiles.forEach(file => formData.append('images', file));
+  formData.append('terms', this.terms);
+
+  // ✅ Approval status always starts as pending
+  formData.append('approvalStatus', 'pending');
+
+  this.http.post('http://localhost:5000/api/listings', formData, {
+    headers: { Authorization: `Bearer ${token}` }
+  }).subscribe({
+    next: () => {
+      alert('Listing submitted for admin approval!');
+      this.router.navigate(['/listings']);
+    },
+    error: err => {
+      console.error('🔥 Full backend error:', err.error);
+      const message = err.error?.error || err.error?.message || 'Unknown error';
+      alert(`Error ${err.status}: ${message}`);
+    }
+  });
+}
 
   logout() {
     this.auth.logout();

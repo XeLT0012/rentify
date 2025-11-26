@@ -14,6 +14,17 @@
   <h2>Add New Listing</h2>
   <form (ngSubmit)="submit()" #listingForm="ngForm">
 
+    <!-- User Type Selection -->
+    <h3>👤 User Type</h3>
+    <div class="form-group">
+      <label>Are you a vendor or standalone person?</label>
+      <select [(ngModel)]="userType" name="userType" required>
+        <option value="">Select Type</option>
+        <option value="standalone">Standalone Person</option>
+        <option value="vendor">Vendor</option>
+      </select>
+    </div>
+
     <!-- 📝 Essential Item Details -->
     <h3>📝 Essential Item Details</h3>
     <div class="form-group">
@@ -49,11 +60,11 @@
     </div>
 
     <!-- 💰 Rental Information -->
-<h3>💰 Rental Information</h3>
-<div class="form-group">
-  <label>Rental Price (Per Day)</label>
-  <input type="number" [(ngModel)]="price" name="price" required placeholder="e.g. 500">
-</div>
+    <h3>💰 Rental Information</h3>
+    <div class="form-group">
+      <label>Rental Price (Per Day)</label>
+      <input type="number" [(ngModel)]="price" name="price" required placeholder="e.g. 500">
+    </div>
 
     <div class="form-group">
       <label>Availability</label>
@@ -84,7 +95,27 @@
       <select [(ngModel)]="contactPreference" name="contactPreference" required>
         <option value="phone">Phone</option>
         <option value="email">Email</option>
+        <option value="chat">Chat</option>
       </select>
+    </div>
+
+    <!-- Vendor-specific fields -->
+    <div *ngIf="userType === 'vendor'">
+      <h4>🏪 Vendor Details</h4>
+      <div class="form-group">
+        <label>Shop Location</label>
+        <input [(ngModel)]="shopLocation" name="shopLocation" required placeholder="e.g. Guwahati, Assam">
+      </div>
+
+      <div class="form-group">
+        <label>Experience</label>
+        <input [(ngModel)]="experience" name="experience" required placeholder="e.g. 5 years in electronics rental">
+      </div>
+
+      <div class="form-group">
+        <label>Certifications</label>
+        <input [(ngModel)]="certifications" name="certifications" placeholder="e.g. ISO certified vendor">
+      </div>
     </div>
 
     <!-- 📸 Media -->
@@ -104,3 +135,4 @@
     <button type="submit">Submit</button>
   </form>
 </section>
+

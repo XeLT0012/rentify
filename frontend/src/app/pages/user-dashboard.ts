@@ -14,28 +14,35 @@ import { RouterModule } from '@angular/router';
 })
 export class UserDashboardComponent implements OnInit {
   listings: any[] = [];
-  filteredListings: any[] = [];
-  selectedListing: any = null;
-  currentImageIndex = 0;
-  searchTerm = '';
-  sortOption = 'priceLowToHigh';
+filteredListings: any[] = [];
+selectedListing: any = null;
+currentImageIndex = 0;
+searchTerm = '';
+sortOption = 'priceLowToHigh';
 
-  constructor(private http: HttpClient, private auth: AuthService) {}
+constructor(private http: HttpClient, private auth: AuthService) {}
 
-  ngOnInit() {
+ngOnInit() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-const currentUserId = user._id; // ✅ exists now
+  const currentUserId = user._id; // ✅ exists now
 
   this.http.get<any[]>('http://localhost:5000/api/listings').subscribe(data => {
     // 🔍 Debug logs
     console.log('Current User ID:', currentUserId);
     console.log('Listing Owners:', data.map(l => l.owner));
+    console.log('Approval Statuses:', data.map(l => l.approvalStatus));
 
     // ✅ filter out listings created by current user
-    this.listings = data.filter(item => item.owner && item.owner._id !== currentUserId);
+    // ✅ only show listings that are approved
+    this.listings = data.filter(item => {
+      const ownerId = typeof item.owner === 'string' ? item.owner : item.owner?._id;
+      return ownerId !== currentUserId && item.approvalStatus === 'approved';
+    });
+
     this.applyFilters();
   });
 }
+
 
   logout() {
     this.auth.logout();
