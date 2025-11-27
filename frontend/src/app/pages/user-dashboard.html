@@ -40,27 +40,35 @@
 
 
   <!-- Fullscreen Popup -->
-  <div class="listing-popup" *ngIf="selectedListing">
-    <div class="popup-content">
-      <div class="image-slider">
-        <img [src]="'http://localhost:5000' + selectedListing.images[currentImageIndex]" alt="Listing image">
-        <button (click)="prevImage($event)">⬅</button>
-        <button (click)="nextImage($event)">➡</button>
-      </div>
-
-      <h3>{{ selectedListing.title }}</h3>
-      <p>{{ selectedListing.description }}</p>
-      <p><strong>Price:</strong> ₹{{ selectedListing.price }} /day</p>
-      <p><strong>Category:</strong> {{ selectedListing.category }}</p>
-      <p><strong>Condition:</strong> {{ selectedListing.condition }}</p>
-      <p><strong>Location:</strong> {{ selectedListing.location }}</p>
-      <p><strong>Available:</strong> {{ selectedListing.availableFrom | date }} to {{ selectedListing.availableUntil | date }}</p>
-      <p><strong>Contact:</strong> {{ selectedListing.contactPreference }}</p>
-
-      <div class="action-buttons">
-        <button class="rent-btn" [routerLink]="['/booking', selectedListing._id]">Rent Now</button>
-        <button class="cancel-btn" (click)="closePopup()">✖ Cancel</button>
-      </div>
-    </div>
+<div class="listing-popup" *ngIf="selectedListing">
+  <div class="popup-content">
+  <div class="image-slider">
+    <img [src]="'http://localhost:5000' + selectedListing.images[currentImageIndex]" alt="Listing image">
+    <button (click)="prevImage($event)">⬅</button>
+    <button (click)="nextImage($event)">➡</button>
   </div>
+
+  <div class="details-grid">
+    <p><strong>Title:</strong> {{ selectedListing.title }}</p>
+    <p><strong>Price:</strong> ₹{{ selectedListing.price }} /day</p>
+    <p><strong>Category:</strong> {{ selectedListing.category }}</p>
+    <p><strong>Condition:</strong> {{ selectedListing.condition }}</p>
+    <p><strong>Location:</strong> {{ selectedListing.location }}</p>
+    <p><strong>Available:</strong> {{ selectedListing.availableFrom | date }} to {{ selectedListing.availableUntil | date }}</p>
+    <p><strong>Contact Preference:</strong> {{ selectedListing.contactPreference }}</p>
+  </div>
+
+  <div class="vendor-details" *ngIf="selectedListing.shopLocation || selectedListing.experience || selectedListing.certifications">
+  <h4>Vendor Details</h4>
+  <p *ngIf="selectedListing.shopLocation"><strong>Shop Location:</strong> {{ selectedListing.shopLocation }}</p>
+  <p *ngIf="selectedListing.experience"><strong>Experience:</strong> {{ selectedListing.experience }}</p>
+  <p *ngIf="selectedListing.certifications"><strong>Certifications:</strong> {{ selectedListing.certifications }}</p>
+</div>
+
+
+  <div class="action-buttons">
+    <button class="rent-btn" [routerLink]="['/booking', selectedListing._id]">Rent Now</button>
+    <button class="cancel-btn" (click)="closePopup()">✖ Cancel</button>
+  </div>
+</div>
 </div>

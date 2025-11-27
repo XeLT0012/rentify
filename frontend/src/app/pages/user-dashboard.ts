@@ -50,10 +50,13 @@ ngOnInit() {
   }
 
   openPopup(listing: any) {
-    this.selectedListing = listing;
-    this.currentImageIndex = 0;
-    document.body.style.overflow = 'hidden';
-  }
+  console.log('Popup triggered'); // ✅ guaranteed log
+  this.selectedListing = listing;
+  console.log('Selected Listing:', this.selectedListing);
+  this.currentImageIndex = 0;
+  document.body.style.overflow = 'hidden';
+}
+
 
   closePopup() {
     this.selectedListing = null;

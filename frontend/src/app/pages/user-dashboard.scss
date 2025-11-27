@@ -119,109 +119,115 @@
   z-index: 999;
 
   .popup-content {
-    background: #fff;
-    padding: 2rem;
-    border-radius: 16px;
-    width: 92%;
-    max-width: 850px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 92%;
+  max-width: 850px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.2);
 
-    .cancel-btn {
+  .image-slider {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    button {
       position: absolute;
-      top: 1rem; right: 1rem;
-      background: #ef4444;
+      top: 22%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.6);
       color: #fff;
       border: none;
-      padding: 0.6rem 1rem;
-      border-radius: 8px;
+      padding: 0.6rem;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 0.9rem;
-
-      &:hover {
-        background: #dc2626;
-      }
+      font-size: 1.2rem;
+      border-radius: 50%;
     }
 
-    .image-slider {
-      position: relative;
-      text-align: center;
-      margin-bottom: 1.5rem;
+    button:first-of-type { left: 12px; }
+    button:last-of-type { right: 12px; }
+  }
 
-      img {
-        width: 100%;
-        height: 320px;
-        object-fit: cover;
-        border-radius: 12px;
-      }
-
-      button {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(0,0,0,0.6);
-        color: #fff;
-        border: none;
-        padding: 0.6rem;
-        cursor: pointer;
-        font-size: 1.2rem;
-        border-radius: 50%;
-      }
-
-      button:first-of-type { left: 12px; }
-      button:last-of-type { right: 12px; }
-    }
-
-    h3 {
-      font-size: 1.6rem;
-      color: #0f172a;
-      margin-bottom: 0.5rem;
-    }
+  .details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
 
     p {
       margin: 0.4rem 0;
       font-size: 1rem;
       color: #475569;
-    }
-
-    .action-buttons {
-  margin-top: 1.5rem;
-  display: flex;
-  gap: 1rem;
-
-  button {
-    flex: 1;
-    padding: 0.8rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: background 0.3s ease;
-  }
-
-  .rent-btn {
-    background: #22c55e;
-    color: #fff;
-
-    &:hover {
-      background: #16a34a;
+      word-wrap: break-word;
     }
   }
 
-  .cancel-btn {
-    background: #ef4444;
-    color: #fff;
+  .vendor-details {
+    grid-column: span 2;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
 
-    &:hover {
-      background: #dc2626;
+    h4 {
+      font-size: 1.2rem;
+      color: #0f172a;
+      margin-bottom: 0.8rem;
+    }
+
+    p {
+      margin: 0.3rem 0;
+      font-size: 0.95rem;
+      color: #334155;
+      line-height: 1.4;
+    }
+  }
+
+  .action-buttons {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+
+    button {
+      flex: 1;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    .rent-btn {
+      background: #22c55e;
+      color: #fff;
+
+      &:hover {
+        background: #16a34a;
+      }
+    }
+
+    .cancel-btn {
+      background: #ef4444;
+      color: #fff;
+
+      &:hover {
+        background: #dc2626;
+      }
     }
   }
 }
-  }
+
 }
 .filter-bar {
   display: flex;
@@ -244,4 +250,5 @@
     font-size: 1rem;
   }
 }
+
 
