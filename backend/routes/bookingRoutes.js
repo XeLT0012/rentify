@@ -95,6 +95,7 @@ router.put('/:id/status', verifyToken, async (req, res) => {
 
 // Mark booking as paid
 const { sendBookingConfirmation } = require('../mailer');
+const { sendVendorEmail } = require('../mailer');
 
 router.put('/:id/paid', verifyToken, async (req, res) => {
   console.log("📩 /paid route triggered");
@@ -105,8 +106,12 @@ router.put('/:id/paid', verifyToken, async (req, res) => {
     }
 
     const booking = await Booking.findById(req.params.id)
-      .populate({ path: 'listing', populate: { path: 'owner', select: 'name email phone' } })
-      .populate('renter', 'name email');
+      .populate({
+  path: 'listing',
+  select: 'title category condition location availableFrom availableTo', // ✅ include booking dates
+  populate: { path: 'owner', select: 'name email phone' }
+})
+      .populate('renter', 'name email phone');
 
     if (!booking) return res.status(404).json({ error: 'Booking not found' });
 
@@ -115,6 +120,7 @@ router.put('/:id/paid', verifyToken, async (req, res) => {
 
     // ✅ Only call sendBookingConfirmation once
     await sendBookingConfirmation(booking.renter.email, booking);
+    await sendVendorEmail(booking);
 
     res.json({ message: 'Booking marked as paid & email sent', booking });
   } catch (err) {
