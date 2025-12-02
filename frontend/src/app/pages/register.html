@@ -21,7 +21,7 @@
         Email is required.
       </small>
       <small class="error" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('email')">
-        Please enter a valid email.
+        Please enter a valid email address.
       </small>
     </div>
 
@@ -29,28 +29,46 @@
     <div class="form-group">
       <label for="register-password">Password</label>
       <input id="register-password" type="password" formControlName="password" placeholder="Choose a password" />
-      <small class="rules">Password must be at least 6 characters long.</small>
+      <small class="rules">Password must be at least 8 characters long.</small>
       <small class="error" *ngIf="form.get('password')?.touched && form.get('password')?.hasError('required')">
         Password is required.
       </small>
       <small class="error" *ngIf="form.get('password')?.touched && form.get('password')?.hasError('minlength')">
-        Password must be at least 6 characters.
+        Password must be at least 8 characters.
+      </small>
+      <!-- ✅ Live password length feedback -->
+      <small class="info" *ngIf="form.get('password')?.value?.length">
+        Current length: {{ form.get('password')?.value?.length }} characters
       </small>
     </div>
 
     <!-- Role -->
-    <div class="form-group">
-      <label for="register-role">Role</label>
-      <select id="register-role" formControlName="role">
-        <option value="">Select a role</option>
-        <option value="user">User</option>
-        <option value="admin">Admin</option>
-      </select>
-      <small class="rules">Role selection is required.</small>
-      <small class="error" *ngIf="form.get('role')?.touched && form.get('role')?.hasError('required')">
-        Please select a role.
-      </small>
-    </div>
+<div class="form-group">
+  <label for="register-role">Role</label>
+  <select id="register-role" formControlName="role">
+    <option value="">Select a role</option>
+    <option value="user">User</option>
+    <option value="admin">Admin</option>
+  </select>
+  <small class="rules">Role selection is required.</small>
+  <small class="error" *ngIf="form.get('role')?.touched && form.get('role')?.hasError('required')">
+    Please select a role.
+  </small>
+</div>
+
+<!-- ✅ Admin Code (only visible if role = admin) -->
+<div class="form-group" *ngIf="form.get('role')?.value === 'admin'">
+  <label for="admin-code">Admin Code</label>
+  <input id="admin-code" type="text" formControlName="adminCode" placeholder="Enter admin code" />
+  <small class="rules">Only admins with the secret code can register.</small>
+  <small class="error" *ngIf="form.get('adminCode')?.touched && form.get('adminCode')?.hasError('required')">
+    Admin code is required.
+  </small>
+  <small class="error" *ngIf="form.get('adminCode')?.touched && form.get('adminCode')?.hasError('invalidCode')">
+    Invalid admin code.
+  </small>
+</div>
+
 
     <!-- Submit -->
     <button type="submit" [disabled]="form.invalid" [class.disabled]="form.invalid">
@@ -61,5 +79,7 @@
     </p>
 
     <p>Already have an account? <a routerLink="/login">Login here</a></p>
+    <!-- ✅ Homepage Link -->
+    <p><a routerLink="/" class="home-link">🏠 Back to Homepage</a></p>
   </form>
 </section>

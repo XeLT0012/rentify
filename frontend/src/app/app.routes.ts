@@ -3,7 +3,7 @@ import { HomeComponent } from './pages/home';
 import { LoginComponent } from './pages/login';
 import { RegisterComponent } from './pages/register';
 import { UserDashboardComponent } from './pages/user-dashboard';
-import { AdminDashboardComponent } from './pages/admin-dashboard';
+import { AdminDashboardComponent } from './pages/admin/admin-dashboard';
 import { ListingsComponent } from './pages/listings';
 import { AddListingComponent } from './pages/add-listing';
 import { ProfileComponent } from './pages/profile';

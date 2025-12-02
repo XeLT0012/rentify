@@ -25,10 +25,10 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // ✅ Login form
+    // ✅ Login form with validation
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      password: ['', [Validators.required, Validators.minLength(8)]] // ✅ enforce min length
     });
 
     // ✅ Forgot password form (email only)
@@ -37,9 +37,17 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  // ✅ Helper getters for template validation
+  get email() { return this.form.get('email'); }
+  get password() { return this.form.get('password'); }
+  get forgotEmail() { return this.forgotForm.get('email'); }
+
   // ✅ Login
   login(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      alert('Please fix the errors before logging in.');
+      return;
+    }
 
     this.http.post<any>('http://localhost:5000/api/users/login', this.form.value)
       .subscribe({
@@ -59,13 +67,15 @@ export class LoginComponent implements OnInit {
 
   // ✅ Forgot Password → Send reset code and redirect
   sendCode(): void {
-    if (this.forgotForm.invalid) return;
+    if (this.forgotForm.invalid) {
+      alert('Please enter a valid email address.');
+      return;
+    }
 
     this.http.post<any>('http://localhost:5000/api/users/forgot-password', this.forgotForm.value)
       .subscribe({
         next: res => {
           alert(res.message);
-          // ✅ Redirect to reset-password page with email in query params
           this.router.navigate(['/reset-password'], { queryParams: { email: this.forgotForm.value.email } });
         },
         error: err => {

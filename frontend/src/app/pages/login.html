@@ -8,10 +8,10 @@
       <label for="login-email">Email</label>
       <input id="login-email" type="email" formControlName="email" placeholder="Enter your email" />
       <small class="rules">Must be a valid email address.</small>
-      <small class="error" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('required')">
+      <small class="error" *ngIf="email?.touched && email?.hasError('required')">
         Email is required.
       </small>
-      <small class="error" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('email')">
+      <small class="error" *ngIf="email?.touched && email?.hasError('email')">
         Please enter a valid email.
       </small>
     </div>
@@ -20,9 +20,15 @@
     <div class="form-group">
       <label for="login-password">Password</label>
       <input id="login-password" type="password" formControlName="password" placeholder="Enter your password" />
-      <small class="rules">Password is required.</small>
-      <small class="error" *ngIf="form.get('password')?.touched && form.get('password')?.hasError('required')">
+      <small class="rules">Password must be at least 8 characters long.</small>
+      <small class="error" *ngIf="password?.touched && password?.hasError('required')">
         Password is required.
+      </small>
+      <small class="error" *ngIf="password?.touched && password?.hasError('minlength')">
+        Password must be at least 8 characters.
+      </small>
+      <small class="info" *ngIf="password?.value?.length">
+        Current length: {{ password?.value?.length }} characters
       </small>
     </div>
 
@@ -38,6 +44,9 @@
       <a (click)="showForgot = true" style="cursor:pointer;">Forgot Password?</a>
     </p>
     <p>Don't have an account? <a routerLink="/register">Register here</a></p>
+
+    <!-- ✅ Homepage Link -->
+    <p><a routerLink="/" class="home-link">🏠 Back to Homepage</a></p>
   </form>
 
   <!-- Forgot Password Form -->
@@ -46,10 +55,10 @@
       <label for="forgot-email">Email</label>
       <input id="forgot-email" type="email" formControlName="email" placeholder="Enter your email" />
       <small class="rules">Must be a valid email address.</small>
-      <small class="error" *ngIf="forgotForm.get('email')?.touched && forgotForm.get('email')?.hasError('required')">
+      <small class="error" *ngIf="forgotEmail?.touched && forgotEmail?.hasError('required')">
         Email is required.
       </small>
-      <small class="error" *ngIf="forgotForm.get('email')?.touched && forgotForm.get('email')?.hasError('email')">
+      <small class="error" *ngIf="forgotEmail?.touched && forgotEmail?.hasError('email')">
         Please enter a valid email.
       </small>
     </div>
@@ -62,5 +71,7 @@
     </p>
 
     <p><a (click)="showForgot = false" style="cursor:pointer;">Back to Login</a></p>
+    <!-- ✅ Homepage Link -->
+    <p><a routerLink="/" class="home-link">🏠 Back to Homepage</a></p>
   </form>
 </section>
