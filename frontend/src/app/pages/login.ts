@@ -43,27 +43,38 @@ export class LoginComponent implements OnInit {
   get forgotEmail() { return this.forgotForm.get('email'); }
 
   // ✅ Login
-  login(): void {
-    if (this.form.invalid) {
-      alert('Please fix the errors before logging in.');
-      return;
-    }
-
-    this.http.post<any>('http://localhost:5000/api/users/login', this.form.value)
-      .subscribe({
-        next: res => {
-          localStorage.setItem('token', res.token);
-          localStorage.setItem('user', JSON.stringify({ _id: res.user._id, role: res.user.role }));
-          this.auth.login(res.token, res.user.role);
-          alert('Login successful!');
-          this.router.navigate([res.user.role === 'admin' ? '/admin' : '/dashboard']);
-        },
-        error: err => {
-          alert('Login failed. Please check your credentials.');
-          console.error('Login failed:', err);
-        }
-      });
+login(): void {
+  if (this.form.invalid) {
+    alert('Please fix the errors before logging in.');
+    return;
   }
+
+  this.http.post<any>('http://localhost:5000/api/users/login', this.form.value)
+    .subscribe({
+      next: res => {
+        // ✅ If backend still returns blocked info, double-check
+        if (res.user.blocked) {
+          alert('Your account has been blocked. Please contact support.');
+          return;
+        }
+
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('user', JSON.stringify({ _id: res.user._id, role: res.user.role }));
+        this.auth.login(res.token, res.user.role);
+        alert('Login successful!');
+        this.router.navigate([res.user.role === 'admin' ? '/admin' : '/dashboard']);
+      },
+      error: err => {
+        if (err.status === 403) {
+          alert('Your account has been blocked. Please contact support.');
+        } else {
+          alert('Login failed. Please check your credentials.');
+        }
+        console.error('Login failed:', err);
+      }
+    });
+}
+
 
   // ✅ Forgot Password → Send reset code and redirect
   sendCode(): void {

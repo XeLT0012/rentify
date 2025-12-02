@@ -24,38 +24,59 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
+// ✅ Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
+    // ✅ Blocked check
+    if (user.blocked) {
+      return res.status(403).json({ error: 'Your account has been blocked. Please contact support.' });
+    }
+
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(401).json({ error: 'Invalid credentials' });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
     res.json({
       token,
       user: {
         _id: user._id,
-        role: user.role
+        role: user.role,
+        blocked: user.blocked
       }
     });
   } catch (err) {
+    console.error('❌ Login error:', err);
     res.status(500).json({ error: 'Login failed' });
   }
 });
 
-// Get profile
+// ✅ Get profile
 router.get('/profile', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    // ✅ Blocked check for profile access
+    if (user.blocked) {
+      return res.status(403).json({ error: 'Your account has been blocked. Please contact support.' });
+    }
+
     res.json(user);
   } catch (err) {
+    console.error('❌ Profile fetch error:', err);
     res.status(500).json({ error: 'Failed to fetch profile' });
   }
 });
+
 
 // Update profile with image
 router.put('/profile', verifyToken, profileUpload.single('profileImage'), async (req, res) => {
@@ -149,6 +170,43 @@ router.post('/reset-password', async (req, res) => {
   } catch (err) {
     console.error('🔥 Reset password error:', err);
     res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
+// ✅ Get all non-admin users
+router.get('/', async (req, res) => {
+  console.log('📥 /api/users route hit'); // log when route is triggered
+  try {
+    const users = await User.find({ role: { $ne: 'admin' } });
+    console.log(`📊 Found ${users.length} users`);
+    res.json(users);
+  } catch (err) {
+    console.error('❌ Error fetching users:', err);
+    res.status(500).json({ error: 'Server error while fetching users' });
+  }
+});
+
+const { sendBlockNotification, sendUnblockNotification } = require('../mailer');
+
+// Block user
+router.put('/:id/block', async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, { blocked: true }, { new: true });
+    if (user) await sendBlockNotification(user);
+    res.json({ message: 'User blocked successfully', user });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to block user' });
+  }
+});
+
+// Unblock user
+router.put('/:id/unblock', async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, { blocked: false }, { new: true });
+    if (user) await sendUnblockNotification(user);
+    res.json({ message: 'User unblocked successfully', user });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to unblock user' });
   }
 });
 

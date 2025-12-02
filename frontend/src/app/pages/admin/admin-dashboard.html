@@ -1,9 +1,11 @@
 <div class="sidebar">
   <h3>Admin Panel</h3>
   <ul>
-    <li><a routerLink="/">Home</a></li>
+    <li><a routerLink="/admin">Home</a></li>
+    <li><a routerLink="/admin/users">Manage Users</a></li>
     <li><a routerLink="/admin/listings">Manage Listings</a></li>
-    <li><a routerLink="/profile">Profile</a></li>
+    <li><a routerLink="/admin/bookings">Manage Bookings</a></li>
+    <li><a routerLink="/admin/profile">Profile</a></li>
     <li><a (click)="logout()">Logout</a></li>
   </ul>
 </div>
@@ -11,4 +13,24 @@
 <div class="dashboard-content">
   <h2>Welcome, Admin!</h2>
   <p>Use the sidebar to manage platform content.</p>
+
+  <!-- ✅ Product Grid -->
+  <div class="product-grid">
+  <div class="product-card" *ngFor="let product of products">
+    <img [src]="'http://localhost:5000' + product.images[0]" alt="Product image" />
+
+    <h3>{{ product.title }}</h3>
+    <p><strong>Category:</strong> {{ product.category }}</p>
+    <p><strong>Condition:</strong> {{ product.condition }}</p>
+    <p><strong>Location:</strong> {{ product.location }}</p>
+    <p><strong>Price:</strong> ₹{{ product.price }}</p>
+
+    <!-- ✅ More details -->
+    <p><strong>Description:</strong> {{ product.description }}</p>
+    <p><strong>Owner:</strong> {{ product.owner?.name }} ({{ product.owner?.email }})</p>
+    <p><strong>Available From:</strong> {{ product.availableFrom | date }}</p>
+    <p><strong>Available Until:</strong> {{ product.availableUntil | date }}</p>
+  </div>
+</div>
+
 </div>

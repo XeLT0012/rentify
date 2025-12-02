@@ -1,0 +1,67 @@
+<div class="sidebar">
+  <h3>Admin Panel</h3>
+  <ul>
+    <li><a routerLink="/admin">Home</a></li>
+    <li><a routerLink="/admin/users">Manage Users</a></li>
+    <li><a routerLink="/admin/listings">Manage Listings</a></li>
+    <li><a routerLink="/admin/bookings">Manage Bookings</a></li>
+    <li><a routerLink="/admin/profile">Profile</a></li>
+    <li><a (click)="logout()">Logout</a></li>
+  </ul>
+</div>
+
+<section class="dashboard-content manage-users">
+  <h2>👥 Manage Users</h2>
+
+  <!-- ✅ Search Bar -->
+  <input [(ngModel)]="searchTerm" placeholder="Search by name or email" class="search-bar" />
+
+  <!-- ✅ Users Table -->
+  <table class="users-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of filteredUsers().slice((currentPage-1)*pageSize, currentPage*pageSize)">
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.blocked ? 'Blocked' : 'Active' }}</td>
+        <td>{{ user.role }}</td>
+        <td class="actions">
+          <button *ngIf="!user.blocked" (click)="blockUser(user._id)">Block</button>
+          <button *ngIf="user.blocked" (click)="unblockUser(user._id)">Unblock</button>
+          <button (click)="viewProfile(user)">View Profile</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ✅ Pagination Controls -->
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="currentPage === 1">Prev</button>
+    <span>Page {{ currentPage }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage * pageSize >= filteredUsers().length">Next</button>
+  </div>
+</section>
+
+<!-- ✅ Profile Preview Modal -->
+<div class="modal" *ngIf="selectedUser">
+  <div class="modal-content">
+    <h3>{{ selectedUser.name }}</h3>
+    <p><strong>Email:</strong> {{ selectedUser.email }}</p>
+    <p><strong>Phone:</strong> {{ selectedUser.phone }}</p>
+    <p><strong>Address:</strong> {{ selectedUser.address }}</p>
+    <p><strong>Status:</strong> {{ selectedUser.blocked ? 'Blocked' : 'Active' }}</p>
+    <p><strong>Role:</strong> {{ selectedUser.role }}</p>
+    <img *ngIf="selectedUser.profileImage" 
+         [src]="'http://localhost:5000' + selectedUser.profileImage" 
+         alt="Profile Image" />
+    <button (click)="closeProfile()">Close</button>
+  </div>
+</div>

@@ -96,5 +96,55 @@ async function sendVendorEmail(booking) {
   console.log("📅 Booking dates:", booking.startDate, "→", booking.endDate);
 }
 
+// Notify user when blocked
+async function sendBlockNotification(user) {
+  const mailOptions = {
+    from: `"Rentify" <${process.env.EMAIL_USER}>`,
+    to: user.email,
+    subject: "🚫 Account Blocked - Rentify",
+    html: `
+      <h2>Account Blocked</h2>
+      <p>Dear ${user.name},</p>
+      <p>Your account has been <strong>blocked</strong> by the admin due to inappropriate activity.</p>
+      <p>If you believe this is a mistake, please contact support.</p>
+      <p>Thank you,<br/>Rentify Team</p>
+    `
+  };
 
-module.exports = { sendBookingConfirmation, sendVendorEmail };
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("📩 Block notification sent:", info.response);
+  } catch (err) {
+    console.error("🔥 Block notification error:", err);
+  }
+}
+
+// Notify user when unblocked
+async function sendUnblockNotification(user) {
+  const mailOptions = {
+    from: `"Rentify" <${process.env.EMAIL_USER}>`,
+    to: user.email,
+    subject: "✅ Account Unblocked - Rentify",
+    html: `
+      <h2>Account Unblocked</h2>
+      <p>Dear ${user.name},</p>
+      <p>Your account has been <strong>unblocked</strong> by the admin. You can now log in and continue using Rentify.</p>
+      <p>Thank you,<br/>Rentify Team</p>
+    `
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("📩 Unblock notification sent:", info.response);
+  } catch (err) {
+    console.error("🔥 Unblock notification error:", err);
+  }
+}
+
+module.exports = { 
+  sendBookingConfirmation, 
+  sendVendorEmail, 
+  sendBlockNotification, 
+  sendUnblockNotification 
+};
+

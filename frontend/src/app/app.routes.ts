@@ -3,13 +3,15 @@ import { HomeComponent } from './pages/home';
 import { LoginComponent } from './pages/login';
 import { RegisterComponent } from './pages/register';
 import { UserDashboardComponent } from './pages/user-dashboard';
-import { AdminDashboardComponent } from './pages/admin/admin-dashboard';
 import { ListingsComponent } from './pages/listings';
 import { AddListingComponent } from './pages/add-listing';
 import { ProfileComponent } from './pages/profile';
 import { BookingPageComponent  } from './pages/booking-page';
 import { MyBookingsComponent } from './pages/my-bookings';
 import { CheckoutComponent } from './pages/checkout';
+
+import { AdminDashboardComponent } from './pages/admin/admin-dashboard';
+import { ManageUsersComponent } from './pages/admin/manage-users';
 
 import { authGuard } from './guards/auth-guard';
 import { roleGuard } from './guards/role-guard';
@@ -23,6 +25,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard, roleGuard('admin')] },
+    { path: 'admin/users', component: ManageUsersComponent, canActivate: [authGuard, roleGuard('admin')] },
   { path: 'dashboard', component: UserDashboardComponent, canActivate: [authGuard, roleGuard('user')] },
   { path: 'listings', component: ListingsComponent, canActivate: [authGuard, roleGuard('user')] },
   { path: 'add-listing', component: AddListingComponent, canActivate: [authGuard, roleGuard('user')] },

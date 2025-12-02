@@ -36,15 +36,15 @@
 
         <!-- ✅ Reveal agent details only if confirmed -->
         <div *ngIf="booking.status === 'confirmed'; else pendingBlock">
-          <p><strong>Customer Name:</strong> {{ booking.listing.owner?.name }}</p>
-          <p><strong>Customer Email:</strong> {{ booking.listing.owner?.email }}</p>
-          <p><strong>Customer Phone:</strong> {{ booking.listing.owner?.phone }}</p>
+          <p><strong>Vendor Name:</strong> {{ booking.listing.owner?.name }}</p>
+          <p><strong>Vendor Email:</strong> {{ booking.listing.owner?.email }}</p>
+          <p><strong>Vendor Phone:</strong> {{ booking.listing.owner?.phone }}</p>
           <p><strong>Location:</strong> {{ booking.listing?.location }}</p>
           <p><strong>Contact Preference:</strong> {{ booking.listing?.contactPreference }}</p>
         </div>
 
         <ng-template #pendingBlock>
-          <p><em>Customer details will be revealed once booking is confirmed.</em></p>
+          <p><em>Vendor details will be revealed once booking is confirmed.</em></p>
         </ng-template>
       </div>
     </div>

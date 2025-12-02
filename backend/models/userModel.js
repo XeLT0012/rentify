@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, default: 'user' },
+  blocked: { type: Boolean, default: false },
 
   // 🔥 New optional profile fields
   profileImage: { type: String }, // stored as `/profile_uploads/<filename>`
