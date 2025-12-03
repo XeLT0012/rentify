@@ -139,10 +139,10 @@ router.put('/:id/reject', async (req, res) => {
   }
 });
 
-// 📌 Edit listing (admin can update details except category)
+// 📌 Edit listing (admin can update details except category & image)
 router.put('/:id/edit', async (req, res) => {
   try {
-    const { title, location, condition, price, image } = req.body;
+    const { title, location, condition, price } = req.body;
 
     const updatedListing = await Listing.findByIdAndUpdate(
       req.params.id,
@@ -150,11 +150,12 @@ router.put('/:id/edit', async (req, res) => {
         ...(title && { title }),
         ...(location && { location }),
         ...(condition && { condition }),
-        ...(price && { price }),
-        ...(image && { image })
+        ...(price && { price })
+        // ❌ image excluded (read-only)
+        // ❌ category excluded (read-only)
       },
       { new: true, runValidators: true } // ✅ return updated doc & enforce schema validation
-    ).populate('owner', 'name email'); // ✅ ensure owner details are returned
+    ).populate('owner', 'name email'); // ✅ ensures owner details are always returned
 
     if (!updatedListing) {
       return res.status(404).json({ error: 'Listing not found' });

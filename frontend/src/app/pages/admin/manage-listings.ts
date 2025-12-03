@@ -16,6 +16,7 @@ import { AuthService } from '../../services/auth';
 export class ManageListingsComponent implements OnInit {
   listings: any[] = [];
   searchTerm: string = '';
+  filterStatus: string = '';   // ✅ new filter dropdown binding
   selectedListing: any = null;
 
   // ✅ Pagination
@@ -39,11 +40,19 @@ export class ManageListingsComponent implements OnInit {
 
   // ✅ Search & Filter
   filteredListings() {
-    return this.listings.filter(l =>
-      (l.title?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-       l.category?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-       l.location?.toLowerCase().includes(this.searchTerm.toLowerCase()))
-    );
+    return this.listings.filter(l => {
+      const matchesSearch =
+        l.title?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        l.category?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        l.location?.toLowerCase().includes(this.searchTerm.toLowerCase());
+
+      const matchesFilter =
+        !this.filterStatus ||
+        (this.filterStatus === 'featured' && l.featured) ||
+        l.approvalStatus?.toLowerCase() === this.filterStatus.toLowerCase();
+
+      return matchesSearch && matchesFilter;
+    });
   }
 
   // ✅ Pagination controls
@@ -63,9 +72,11 @@ export class ManageListingsComponent implements OnInit {
   approveListing(id: string) {
     this.http.put(`http://localhost:5000/api/listings/${id}/approve`, {})
       .subscribe({
-        next: () => {
-          const listing = this.listings.find(l => l._id === id);
-          if (listing) listing.approvalStatus = 'approved';
+        next: (res: any) => {
+          const index = this.listings.findIndex(l => l._id === id);
+          if (index !== -1) {
+            this.listings[index] = res.listing; // ✅ replace with backend response
+          }
         },
         error: err => console.error('Failed to approve listing:', err)
       });
@@ -75,68 +86,63 @@ export class ManageListingsComponent implements OnInit {
   rejectListing(id: string) {
     this.http.put(`http://localhost:5000/api/listings/${id}/reject`, {})
       .subscribe({
-        next: () => {
-          const listing = this.listings.find(l => l._id === id);
-          if (listing) listing.approvalStatus = 'rejected';
+        next: (res: any) => {
+          const index = this.listings.findIndex(l => l._id === id);
+          if (index !== -1) {
+            this.listings[index] = res.listing; // ✅ replace with backend response
+          }
         },
         error: err => console.error('Failed to reject listing:', err)
       });
   }
 
-  // ✅ Inline edit (toggle editing mode)
-  editListing(listing: any) {
-    listing.editing = true;
-  }
-
-  cancelEdit(listing: any) {
-  listing.editing = false;
+  // ✅ Listing modal
+viewListing(listing: any) {
+  // clone object so edits don’t immediately affect table until saved
+  this.selectedListing = { ...listing, editing: false };
 }
 
+closeListing() {
+  this.selectedListing = null;
+}
 
-  // ✅ Save listing (inline update)
-  saveListing(listing: any) {
+// ✅ Save listing (modal update)
+saveListing(listing: any) {
   this.http.put(`http://localhost:5000/api/listings/${listing._id}/edit`, listing)
     .subscribe({
       next: (res: any) => {
-        listing.editing = false;
-
-        // ✅ Replace local listing with updated one from backend
         const index = this.listings.findIndex(l => l._id === listing._id);
         if (index !== -1) {
-          this.listings[index] = res.listing;
+          this.listings[index] = res.listing; // ✅ update local array
         }
-
+        this.selectedListing = null; // ✅ close modal after save
         console.log('Listing updated successfully:', res);
       },
       error: err => console.error('Failed to update listing:', err)
     });
 }
 
-  // ✅ Listing modal
-  viewListing(listing: any) {
-    this.selectedListing = listing;
-  }
-
-  closeListing() {
-    this.selectedListing = null;
-  }
+// ✅ Cancel edit (switch back to view mode)
+cancelEdit(listing: any) {
+  listing.editing = false;
+}
 
   // ✅ Toggle featured status
-toggleFeatured(listing: any) {
-  const newStatus = !listing.featured;
+  toggleFeatured(listing: any) {
+    const newStatus = !listing.featured;
 
-  this.http.put(`http://localhost:5000/api/listings/${listing._id}/featured`, { featured: newStatus })
-    .subscribe({
-      next: (res: any) => {
-        const index = this.listings.findIndex(l => l._id === listing._id);
-        if (index !== -1) {
-          this.listings[index] = res.listing; // ✅ update with backend response
-        }
-        console.log('Featured status updated:', res);
-      },
-      error: err => console.error('Failed to update featured status:', err)
-    });
-}
+    this.http.put(`http://localhost:5000/api/listings/${listing._id}/featured`, { featured: newStatus })
+      .subscribe({
+        next: (res: any) => {
+          const index = this.listings.findIndex(l => l._id === listing._id);
+          if (index !== -1) {
+            this.listings[index] = res.listing; // ✅ update with backend response
+          }
+          console.log('Featured status updated:', res);
+        },
+        error: err => console.error('Failed to update featured status:', err)
+      });
+  }
 
   // ✅ Logout
   logout() {

@@ -169,3 +169,56 @@
     }
   }
 }
+
+.image-gallery {
+  margin: 10px 0;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.gallery-scroll {
+  display: flex;
+  gap: 10px;
+}
+
+.gallery-image {
+  max-height: 150px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.filter-dropdown {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  margin: 10px 0;
+
+  /* subtle shadow */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+  /* remove default browser arrow style */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* add custom arrow */
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23333' height='12' viewBox='0 0 24 24' width='12' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+}
+
+.filter-dropdown:hover {
+  border-color: #888;
+}
+
+.filter-dropdown:focus {
+  outline: none;
+  border-color: #0078d7; /* Microsoft blue */
+  box-shadow: 0 0 0 2px rgba(0,120,215,0.2);
+}

@@ -1,0 +1,93 @@
+<div class="sidebar">
+  <h3>Admin Panel</h3>
+  <ul>
+    <li><a routerLink="/admin">Home</a></li>
+    <li><a routerLink="/admin/users">Manage Users</a></li>
+    <li><a routerLink="/admin/listings">Manage Listings</a></li>
+    <li><a routerLink="/admin/bookings">Manage Bookings</a></li>
+    <li><a routerLink="/admin/profile">Profile</a></li>
+    <li><a (click)="logout()">Logout</a></li>
+  </ul>
+</div>
+
+<section class="dashboard-content manage-bookings">
+  <h2>📑 Manage Bookings</h2>
+
+  <!-- ✅ Search Bar -->
+  <input [(ngModel)]="searchTerm" placeholder="Search by renter, item, or booking ID" class="search-bar" />
+
+  <!-- ✅ Filter Dropdown -->
+  <select [(ngModel)]="filterStatus" class="filter-dropdown">
+    <option value="">All</option>
+    <option value="pending">Pending</option>
+    <option value="confirmed">Confirmed</option>
+    <option value="cancelled">Cancelled</option>
+    <option value="completed">Completed</option>
+  </select>
+
+  <!-- ✅ Bookings Table -->
+  <table class="bookings-table">
+    <thead>
+      <tr>
+        <th>Booking ID</th>
+        <th>Item</th>
+        <th>Renter</th>
+        <th>Dates</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let booking of filteredBookings().slice((currentPage-1)*pageSize, currentPage*pageSize)">
+        <td>{{ booking._id }}</td>
+        <td>{{ booking.listing?.title }}</td>
+<td>{{ booking.renter?.name }}</td>
+<td>{{ booking.startDate | date }} → {{ booking.endDate | date }}</td>
+<td>{{ booking.status }}</td>
+        <td>
+          <button (click)="viewBooking(booking)">View Details</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ✅ Pagination Controls -->
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="currentPage === 1">Prev</button>
+    <span>Page {{ currentPage }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage * pageSize >= filteredBookings().length">Next</button>
+  </div>
+</section>
+
+<!-- ✅ Booking Details Modal -->
+<div class="modal" *ngIf="selectedBooking">
+  <div class="modal-content">
+    <h3>Booking Details</h3>
+    <p><strong>Booking ID:</strong> {{ selectedBooking._id }}</p>
+    <p><strong>Item:</strong> {{ selectedBooking.listing?.title }} ({{ selectedBooking.listing?.category }})</p>
+<p><strong>Condition:</strong> {{ selectedBooking.listing?.condition }}</p>
+<p><strong>Price:</strong> ₹{{ selectedBooking.listing?.price }}/day</p>
+
+<p><strong>Renter:</strong> {{ selectedBooking.renter?.name }} ({{ selectedBooking.renter?.email }})</p>
+<p><strong>Dates:</strong> {{ selectedBooking.startDate | date }} → {{ selectedBooking.endDate | date }}</p>
+<p><strong>Total Price:</strong> ₹{{ selectedBooking.totalPrice }}</p>
+<p><strong>Status:</strong> {{ selectedBooking.status }}</p>
+<p><strong>Payment ID:</strong> {{ selectedBooking.paymentId }}</p>
+
+<!-- ✅ Image gallery -->
+<div class="image-gallery" *ngIf="selectedBooking.listing?.images?.length">
+  <div class="gallery-scroll">
+    <img *ngFor="let img of selectedBooking.listing.images"
+         [src]="'http://localhost:5000' + img"
+         alt="Item Image"
+         class="gallery-image" />
+  </div>
+</div>
+
+
+    <!-- Actions -->
+    <div class="modal-actions">
+      <button (click)="closeBooking()">Close</button>
+    </div>
+  </div>
+</div>

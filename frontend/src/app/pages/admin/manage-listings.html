@@ -16,6 +16,15 @@
   <!-- ✅ Search Bar -->
   <input [(ngModel)]="searchTerm" placeholder="Search by title, category, or location" class="search-bar" />
 
+  <!-- ✅ Filter Dropdown -->
+  <select [(ngModel)]="filterStatus" class="filter-dropdown">
+    <option value="">All</option>
+    <option value="approved">Approved</option>
+    <option value="pending">Pending</option>
+    <option value="rejected">Rejected</option>
+    <option value="featured">Featured</option>
+  </select>
+
   <!-- ✅ Listings Table -->
   <table class="listings-table">
     <thead>
@@ -32,57 +41,38 @@
     </thead>
     <tbody>
       <tr *ngFor="let listing of filteredListings().slice((currentPage-1)*pageSize, currentPage*pageSize)">
-  <!-- Title -->
-  <td *ngIf="!listing.editing">{{ listing.title }}</td>
-  <td *ngIf="listing.editing">
-    <input [(ngModel)]="listing.title" placeholder="Edit title" />
-  </td>
+        
+        <!-- Title -->
+        <td>{{ listing.title }}</td>
 
-  <!-- Category (always read-only) -->
-<td>{{ listing.category }}</td>
+        <!-- Category -->
+        <td>{{ listing.category }}</td>
 
-  <!-- Location -->
-  <td *ngIf="!listing.editing">{{ listing.location }}</td>
-  <td *ngIf="listing.editing">
-    <input [(ngModel)]="listing.location" placeholder="Edit location" />
-  </td>
+        <!-- Location -->
+        <td>{{ listing.location }}</td>
 
-  <!-- Condition -->
-  <td *ngIf="!listing.editing">{{ listing.condition }}</td>
-  <td *ngIf="listing.editing">
-    <input [(ngModel)]="listing.condition" placeholder="Edit condition" />
-  </td>
+        <!-- Condition -->
+        <td>{{ listing.condition }}</td>
 
-  <!-- Price -->
-  <td *ngIf="!listing.editing">₹{{ listing.price }}/day</td>
-  <td *ngIf="listing.editing">
-    <input type="number" [(ngModel)]="listing.price" placeholder="Edit price" />
-  </td>
+        <!-- Price -->
+        <td>₹{{ listing.price }}/day</td>
 
-  <!-- Status -->
-  <td>{{ listing.approvalStatus }}</td>
+        <!-- Status -->
+        <td>{{ listing.approvalStatus }}</td>
 
-  <!-- Owner -->
-  <td>{{ listing.owner?.name }}</td>
+        <!-- Owner -->
+        <td>{{ listing.owner?.name }}</td>
 
-  <!-- Actions -->
-  <td class="actions">
-  <button *ngIf="!listing.editing" (click)="editListing(listing)">Edit</button>
-  <button *ngIf="listing.editing" (click)="saveListing(listing)">Save</button>
-  <button *ngIf="listing.editing" (click)="cancelEdit(listing)">Cancel</button>
-
-  <button (click)="approveListing(listing._id)">Approve</button>
-  <button (click)="rejectListing(listing._id)">Reject</button>
-
-  <!-- ✅ Featured toggle -->
-  <button (click)="toggleFeatured(listing)">
-    {{ listing.featured ? 'Unfeature' : 'Feature' }}
-  </button>
-
-  <button (click)="viewListing(listing)">View Details</button>
-</td>
-</tr>
-
+        <!-- Actions -->
+        <td class="actions">
+          <button (click)="approveListing(listing._id)">Approve</button>
+          <button (click)="rejectListing(listing._id)">Reject</button>
+          <button (click)="toggleFeatured(listing)">
+            {{ listing.featured ? 'Unfeature' : 'Feature' }}
+          </button>
+          <button (click)="viewListing(listing)">View Details</button>
+        </td>
+      </tr>
     </tbody>
   </table>
 
@@ -94,19 +84,73 @@
   </div>
 </section>
 
-<!-- ✅ Listing Preview Modal -->
+<!-- ✅ Listing Preview + Edit Modal -->
 <div class="modal" *ngIf="selectedListing">
   <div class="modal-content">
     <h3>{{ selectedListing.title }}</h3>
-    <p><strong>Category:</strong> {{ selectedListing.category }}</p>
-    <p><strong>Location:</strong> {{ selectedListing.location }}</p>
-    <p><strong>Condition:</strong> {{ selectedListing.condition }}</p>
-    <p><strong>Price:</strong> ₹{{ selectedListing.price }}/day</p>
-    <p><strong>Status:</strong> {{ selectedListing.approvalStatus }}</p>
-    <p><strong>Owner:</strong> {{ selectedListing.owner?.name }} ({{ selectedListing.owner?.email }})</p>
-    <img *ngIf="selectedListing.image" 
-         [src]="'http://localhost:5000' + selectedListing.image" 
-         alt="Listing Image" />
-    <button (click)="closeListing()">Close</button>
+
+    <!-- Default view mode -->
+    <div *ngIf="!selectedListing.editing">
+      <p><strong>Category:</strong> {{ selectedListing.category }}</p>
+      <p><strong>Location:</strong> {{ selectedListing.location }}</p>
+      <p><strong>Condition:</strong> {{ selectedListing.condition }}</p>
+      <p><strong>Price:</strong> ₹{{ selectedListing.price }}/day</p>
+      <p><strong>Status:</strong> {{ selectedListing.approvalStatus }}</p>
+      <p><strong>Owner:</strong> {{ selectedListing.owner?.name }} ({{ selectedListing.owner?.email }})</p>
+
+      <!-- ✅ Image gallery (scrollable if multiple images) -->
+      <div class="image-gallery" *ngIf="selectedListing.images?.length">
+        <div class="gallery-scroll">
+          <img *ngFor="let img of selectedListing.images"
+               [src]="'http://localhost:5000' + img"
+               alt="Listing Image"
+               class="gallery-image" />
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="modal-actions">
+        <button (click)="selectedListing.editing = true">Edit</button>
+        <button (click)="closeListing()">Close</button>
+      </div>
+    </div>
+
+    <!-- Edit mode -->
+<div *ngIf="selectedListing.editing">
+  <label>Title:</label>
+  <input [(ngModel)]="selectedListing.title" />
+
+  <p><strong>Category:</strong> {{ selectedListing.category }}</p> <!-- read-only -->
+
+  <label>Location:</label>
+  <input [(ngModel)]="selectedListing.location" />
+
+  <label>Condition:</label>
+  <select [(ngModel)]="selectedListing.condition">
+    <option value="New">New</option>
+    <option value="Like New">Like New</option>
+    <option value="Good">Good</option>
+    <option value="Fair">Fair</option>
+  </select>
+
+  <label>Price (₹/day):</label>
+  <input type="number" [(ngModel)]="selectedListing.price" />
+
+  <!-- ✅ Image gallery still visible, but read-only -->
+  <div class="image-gallery" *ngIf="selectedListing.images?.length">
+    <div class="gallery-scroll">
+      <img *ngFor="let img of selectedListing.images"
+           [src]="'http://localhost:5000' + img"
+           alt="Listing Image"
+           class="gallery-image" />
+    </div>
+  </div>
+
+  <div class="modal-actions">
+    <button (click)="saveListing(selectedListing)">Save</button>
+    <button (click)="cancelEdit(selectedListing)">Cancel</button>
+  </div>
+</div>
+
   </div>
 </div>

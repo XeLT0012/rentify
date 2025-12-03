@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Booking = require('../models/Booking');
 const { verifyToken } = require('../middleware/authMiddleware');
+const Listing = require('../models/listingModel');
+const User = require('../models/userModel'); // adjust path if different
 
 // Create a new booking
 router.post('/', verifyToken, async (req, res) => {
@@ -28,6 +30,41 @@ router.post('/', verifyToken, async (req, res) => {
   } catch (err) {
     console.error('🔥 Booking creation error:', err);
     res.status(500).json({ error: 'Failed to create booking' });
+  }
+});
+
+// 📌 GET all bookings with listing + renter details
+router.get('/', async (req, res) => {
+  try {
+    const bookings = await Booking.find();
+
+    // For each booking, fetch listing + renter details manually
+    const enrichedBookings = await Promise.all(
+      bookings.map(async (booking) => {
+        const listing = await Listing.findById(booking.listing)
+          .select('title category condition price images location deliveryOption');
+        const renter = await User.findById(booking.renter)
+          .select('name email phone');
+
+        return {
+          _id: booking._id,
+          startDate: booking.startDate,
+          endDate: booking.endDate,
+          notes: booking.notes,
+          totalPrice: booking.totalPrice,
+          status: booking.status,
+          paymentId: booking.paymentId,
+          createdAt: booking.createdAt,
+          listing,   // full listing details
+          renter     // full renter details
+        };
+      })
+    );
+
+    res.json(enrichedBookings);
+  } catch (err) {
+    console.error('Failed to fetch bookings:', err);
+    res.status(500).json({ error: 'Failed to fetch bookings' });
   }
 });
 
