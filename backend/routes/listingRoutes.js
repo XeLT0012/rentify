@@ -94,32 +94,76 @@ router.get('/my-listings', verifyToken, async (req, res) => {
   }
 });
 
-// Admin approval route
-router.put('/:id/approve', verifyToken, async (req, res) => {
+// 📌 Admin: Get all listings (any status)
+router.get('/all', async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Not authorized' });
-    }
+    const listings = await Listing.find().populate('owner', 'name email');
+    res.json(listings);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch all listings' });
+  }
+});
 
-    const { status } = req.body; // expected: 'approved' or 'rejected'
-    if (!['approved', 'rejected'].includes(status)) {
-      return res.status(400).json({ error: 'Invalid approval status' });
-    }
-
-    const listing = await Listing.findByIdAndUpdate(
+// 📌 Approve listing
+router.put('/:id/approve', async (req, res) => {
+  try {
+    const updatedListing = await Listing.findByIdAndUpdate(
       req.params.id,
-      { approvalStatus: status },
-      { new: true }
-    );
+      { approvalStatus: 'approved' },   // ✅ use the same field as reject
+      { new: true, runValidators: true }
+    ).populate('owner', 'name email');  // ✅ keep owner populated
 
-    if (!listing) {
+    if (!updatedListing) {
       return res.status(404).json({ error: 'Listing not found' });
     }
 
-    res.json({ message: `Listing ${status}`, listing });
+    res.json({ message: 'Listing approved successfully', listing: updatedListing });
   } catch (err) {
-    console.error('🔥 Error updating approval status:', err);
-    res.status(500).json({ error: 'Failed to update approval status' });
+    console.error('Failed to approve listing:', err);
+    res.status(500).json({ error: 'Failed to approve listing' });
+  }
+});
+
+
+// 📌 Reject listing
+router.put('/:id/reject', async (req, res) => {
+  try {
+    const listing = await Listing.findByIdAndUpdate(
+      req.params.id,
+      { approvalStatus: 'rejected' },
+      { new: true }
+    );
+    res.json({ message: 'Listing rejected successfully', listing });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to reject listing' });
+  }
+});
+
+// 📌 Edit listing (admin can update details except category)
+router.put('/:id/edit', async (req, res) => {
+  try {
+    const { title, location, condition, price, image } = req.body;
+
+    const updatedListing = await Listing.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...(title && { title }),
+        ...(location && { location }),
+        ...(condition && { condition }),
+        ...(price && { price }),
+        ...(image && { image })
+      },
+      { new: true, runValidators: true } // ✅ return updated doc & enforce schema validation
+    ).populate('owner', 'name email'); // ✅ ensure owner details are returned
+
+    if (!updatedListing) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
+
+    res.json({ message: 'Listing updated successfully', listing: updatedListing });
+  } catch (err) {
+    console.error('Failed to update listing:', err);
+    res.status(500).json({ error: 'Failed to update listing' });
   }
 });
 
@@ -167,28 +211,25 @@ router.put('/:id', verifyToken, async (req, res) => {
   }
 });
 
-// Mark listing as featured (admin only)
-router.put('/:id/featured', verifyToken, async (req, res) => {
+// 📌 Toggle featured status (admin can mark/unmark listing as featured)
+router.put('/:id/featured', async (req, res) => {
   try {
-    // ✅ Ensure only admin can update
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Not authorized' });
-    }
+    const { featured } = req.body; // expects true/false
 
-    const listing = await Listing.findByIdAndUpdate(
+    const updatedListing = await Listing.findByIdAndUpdate(
       req.params.id,
-      { featured: true },
-      { new: true }
-    );
+      { featured },
+      { new: true, runValidators: true }
+    ).populate('owner', 'name email'); // ✅ keep owner populated
 
-    if (!listing) {
+    if (!updatedListing) {
       return res.status(404).json({ error: 'Listing not found' });
     }
 
-    res.json({ message: 'Listing marked as featured', listing });
+    res.json({ message: 'Featured status updated', listing: updatedListing });
   } catch (err) {
-    console.error('🔥 Error marking listing as featured:', err);
-    res.status(500).json({ error: 'Failed to update listing' });
+    console.error('Failed to update featured status:', err);
+    res.status(500).json({ error: 'Failed to update featured status' });
   }
 });
 
