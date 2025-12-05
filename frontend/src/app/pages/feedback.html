@@ -1,0 +1,81 @@
+<div class="feedback-container">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h3>User Dashboard</h3>
+    <ul>
+      <li><a routerLink="/dashboard">Home</a></li>
+      <li><a routerLink="/listings">My Listings</a></li>
+      <li><a routerLink="/add-listing">Add Listing</a></li>
+      <li><a routerLink="/profile">Profile</a></li>
+      <li><a routerLink="/bookings">📑 My Bookings</a></li>
+      <li><a routerLink="/feedback">💬 Feedback</a></li>
+      <li><a (click)="logout()">Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- Feedback Page Content -->
+  <div class="feedback-page">
+    <h2>💬 Submit Feedback</h2>
+
+    <!-- Feedback Form -->
+    <form (ngSubmit)="submitFeedback()" #feedbackForm="ngForm" class="feedback-form">
+      <!-- Message -->
+      <div class="form-group">
+        <label for="message">Your Feedback</label>
+        <textarea id="message" name="message" [(ngModel)]="feedback.message" required></textarea>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select id="category" name="category" [(ngModel)]="feedback.category">
+          <option value="General Feedback">General Feedback</option>
+          <option value="Bug Report">Bug Report</option>
+          <option value="Feature Request">Feature Request</option>
+        </select>
+      </div>
+
+      <!-- Rating (Dropdown or Radio) -->
+      <div class="form-group">
+        <label>Rating</label>
+        <!-- OR Radio buttons -->
+        <div class="rating-radio">
+          <label *ngFor="let r of [1,2,3,4,5]">
+            <input type="radio" name="rating" [value]="r" [(ngModel)]="feedback.rating" />
+            {{ r }} ★
+          </label>
+        </div>
+      </div>
+
+      <!-- Screenshot Upload -->
+      <div class="form-group">
+        <label for="screenshot">Screenshot (optional)</label>
+        <input type="file" id="screenshot" (change)="onFileSelected($event)" />
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" [disabled]="feedbackForm.invalid">Submit Feedback</button>
+    </form>
+
+    <hr />
+
+    <!-- Feedback History -->
+    <h3>📑 My Feedback</h3>
+    <div *ngIf="myFeedbacks.length === 0">
+      <p>You haven’t posted any feedback yet.</p>
+    </div>
+
+    <div *ngFor="let fb of myFeedbacks" class="feedback-card">
+      <p><strong>Message:</strong> {{ fb.message }}</p>
+      <p><strong>Category:</strong> {{ fb.category }}</p>
+      <p><strong>Rating:</strong> {{ fb.rating || 'N/A' }}</p>
+      <p><strong>Status:</strong> {{ fb.status }}</p>
+      <p><strong>Date:</strong> {{ fb.createdAt | date:'medium' }}</p>
+
+      <!-- Screenshot preview -->
+      <div *ngIf="fb.screenshot">
+        <img [src]="'http://localhost:5000' + fb.screenshot" alt="Screenshot" class="feedback-image" />
+      </div>
+    </div>
+  </div>
+</div>

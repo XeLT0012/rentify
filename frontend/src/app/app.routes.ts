@@ -9,6 +9,7 @@ import { ProfileComponent } from './pages/profile';
 import { BookingPageComponent  } from './pages/booking-page';
 import { MyBookingsComponent } from './pages/my-bookings';
 import { CheckoutComponent } from './pages/checkout';
+import { FeedbackComponent } from './pages/feedback';
 
 import { AdminDashboardComponent } from './pages/admin/admin-dashboard';
 import { ManageUsersComponent } from './pages/admin/manage-users';
@@ -37,6 +38,7 @@ export const routes: Routes = [
   { path: 'booking/:id', component: BookingPageComponent , canActivate: [authGuard, roleGuard('user')] },
   { path: 'bookings', component: MyBookingsComponent , canActivate: [authGuard, roleGuard('user')] },
   { path: 'checkout', component: CheckoutComponent , canActivate: [authGuard, roleGuard('user')] },
+  { path: 'feedback', component: FeedbackComponent , canActivate: [authGuard, roleGuard('user')] },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: '**', component: NotFoundComponent } // ✅ Catch-all 404
 ];

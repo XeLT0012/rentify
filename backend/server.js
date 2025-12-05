@@ -9,6 +9,8 @@ app.use(express.json());
 const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/profile_uploads', express.static('profile_uploads'));
+app.use('/feedback_uploads', express.static(path.join(__dirname, 'feedback_uploads')));
+
 
 // ✅ Import and use the route
 const userRoutes = require('./routes/userRoutes');
@@ -19,6 +21,9 @@ app.use('/api/listings', listingRoutes);
 
 const bookingRoutes = require('./routes/bookingRoutes');
 app.use('/api/bookings', bookingRoutes);
+
+const feedback = require('./routes/feedback');
+app.use('/api/feedback', feedback);
 
 // ✅ Optional root route for testing
 app.get('/', (req, res) => {
