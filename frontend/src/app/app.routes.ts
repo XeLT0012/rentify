@@ -15,6 +15,7 @@ import { AdminDashboardComponent } from './pages/admin/admin-dashboard';
 import { ManageUsersComponent } from './pages/admin/manage-users';
 import { ManageListingsComponent } from './pages/admin/manage-listings';
 import { ManageBookingsComponent } from './pages/admin/manage-bookings';
+import { ManageFeedbackComponent } from './pages/admin/manage-feedback';
 
 import { authGuard } from './guards/auth-guard';
 import { roleGuard } from './guards/role-guard';
@@ -31,6 +32,7 @@ export const routes: Routes = [
     { path: 'admin/users', component: ManageUsersComponent, canActivate: [authGuard, roleGuard('admin')] },
     { path: 'admin/listings', component: ManageListingsComponent, canActivate: [authGuard, roleGuard('admin')] },
     { path: 'admin/bookings', component: ManageBookingsComponent, canActivate: [authGuard, roleGuard('admin')] },
+    { path: 'admin/feedback', component: ManageFeedbackComponent, canActivate: [authGuard, roleGuard('admin')] },
   { path: 'dashboard', component: UserDashboardComponent, canActivate: [authGuard, roleGuard('user')] },
   { path: 'listings', component: ListingsComponent, canActivate: [authGuard, roleGuard('user')] },
   { path: 'add-listing', component: AddListingComponent, canActivate: [authGuard, roleGuard('user')] },

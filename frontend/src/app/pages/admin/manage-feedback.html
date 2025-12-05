@@ -1,0 +1,82 @@
+<div class="manage-feedback-container">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h3>Admin Dashboard</h3>
+    <ul>
+      <li><a routerLink="/admin">Home</a></li>
+      <li><a routerLink="/admin/listings">Manage Listings</a></li>
+      <li><a routerLink="/admin/users">Manage Users</a></li>
+    <li><a routerLink="/admin/bookings">Manage Bookings</a></li>
+    <li><a routerLink="/admin/profile">Profile</a></li>
+      <li><a routerLink="/admin/feedback">Manage Feedback</a></li>
+      <li><a (click)="logout()">Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- Feedback Table -->
+  <div class="feedback-page">
+    <h2>📑 Manage Feedback</h2>
+
+    <!-- Filters + Search -->
+    <div class="filters">
+      <input type="text" placeholder="Search by user or message..." [(ngModel)]="searchTerm" (input)="applyFilters()" />
+
+      <select [(ngModel)]="filterCategory" (change)="applyFilters()">
+        <option value="">All Categories</option>
+        <option value="General Feedback">General Feedback</option>
+        <option value="Bug Report">Bug Report</option>
+        <option value="Feature Request">Feature Request</option>
+      </select>
+
+      <select [(ngModel)]="filterStatus" (change)="applyFilters()">
+        <option value="">All Status</option>
+        <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+      </select>
+    </div>
+
+    <table class="feedback-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Message</th>
+          <th>Category</th>
+          <th>Rating</th>
+          <th>Screenshot</th>
+          <th>Status</th>
+          <th>Change Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let fb of paginatedFeedbacks">
+          <td>{{ fb.user?.name || 'Unknown' }}</td>
+          <td>{{ fb.message }}</td>
+          <td>{{ fb.category }}</td>
+          <td>{{ fb.rating || 'N/A' }}</td>
+          <td>
+            <img *ngIf="fb.screenshot" [src]="'http://localhost:5000' + fb.screenshot" 
+                 alt="Screenshot" class="feedback-image" />
+          </td>
+          <td>
+            <span class="status-badge" [ngClass]="'status-' + fb.status">
+              {{ fb.status }}
+            </span>
+          </td>
+          <td>
+            <select [ngModel]="fb.status" (ngModelChange)="changeStatus(fb._id, $event)">
+  <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+</select>
+          </td>
+          <td>{{ fb.createdAt | date:'medium' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="currentPage === 1">Prev</button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+    </div>
+  </div>
+</div>

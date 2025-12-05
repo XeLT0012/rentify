@@ -41,4 +41,40 @@ router.get('/my-feedback', verifyToken, async (req, res) => {
   }
 });
 
+// 📌 GET: All feedback (admin only)
+router.get('/', async (req, res) => {
+  try {
+    const feedbacks = await Feedback.find().populate('user', 'name email').sort({ createdAt: -1 });
+    res.json(feedbacks);
+  } catch (err) {
+    console.error('Failed to fetch all feedback:', err);
+    res.status(500).json({ error: 'Failed to fetch feedback' });
+  }
+});
+
+// 📌 PUT: Change feedback status (admin only)
+router.put('/:id/status', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const validStatuses = ['new', 'reviewed', 'resolved'];
+
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status value' });
+    }
+
+    const feedback = await Feedback.findById(req.params.id);
+    if (!feedback) {
+      return res.status(404).json({ error: 'Feedback not found' });
+    }
+
+    feedback.status = status;
+    await feedback.save();
+
+    res.json({ message: 'Feedback status updated successfully', feedback });
+  } catch (err) {
+    console.error('Failed to update feedback status:', err);
+    res.status(500).json({ error: 'Failed to update feedback status' });
+  }
+});
+
 module.exports = router;
