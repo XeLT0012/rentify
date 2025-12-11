@@ -3,10 +3,13 @@ const router = express.Router();
 const User = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { verifyToken } = require('../middleware/authMiddleware');
+const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
 const profileUpload = require('../middleware/profileUploadMiddleware');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const { sendBlockNotification, sendUnblockNotification } = require('../mailer');
+
+// ---------------- USER ROUTES ----------------
 
 // Register
 router.post('/register', async (req, res) => {
@@ -24,14 +27,13 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// ✅ Login
+// Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
-    // ✅ Blocked check
     if (user.blocked) {
       return res.status(403).json({ error: 'Your account has been blocked. Please contact support.' });
     }
@@ -59,13 +61,12 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// ✅ Get profile
+// Get profile (user)
 router.get('/profile', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // ✅ Blocked check for profile access
     if (user.blocked) {
       return res.status(403).json({ error: 'Your account has been blocked. Please contact support.' });
     }
@@ -77,8 +78,7 @@ router.get('/profile', verifyToken, async (req, res) => {
   }
 });
 
-
-// Update profile with image
+// Update profile (user) with image
 router.put('/profile', verifyToken, profileUpload.single('profileImage'), async (req, res) => {
   try {
     const updates = {
@@ -106,23 +106,17 @@ router.put('/profile', verifyToken, profileUpload.single('profileImage'), async 
   }
 });
 
-// Temporary in-memory store (not persisted)
+// Forgot Password
 let resetCodes = {};
-
-// Forgot Password - generate numeric code
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // ✅ Generate 6-digit code
     const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // ✅ Store temporarily in memory (expires in 10 minutes)
     resetCodes[email] = { code: resetCode, expires: Date.now() + 10 * 60 * 1000 };
 
-    // ✅ Send email
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
@@ -132,11 +126,7 @@ router.post('/forgot-password', async (req, res) => {
       to: user.email,
       from: process.env.EMAIL_USER,
       subject: 'Rentify Password Reset Code',
-      html: `
-        <h2>Password Reset Code</h2>
-        <p>Your reset code is: <b>${resetCode}</b></p>
-        <p>This code will expire in 10 minutes.</p>
-      `
+      html: `<h2>Password Reset Code</h2><p>Your reset code is: <b>${resetCode}</b></p><p>This code will expire in 10 minutes.</p>`
     });
 
     res.json({ message: 'Reset code sent to your email' });
@@ -146,7 +136,7 @@ router.post('/forgot-password', async (req, res) => {
   }
 });
 
-// Verify code and reset password
+// Reset Password
 router.post('/reset-password', async (req, res) => {
   const { email, code, password } = req.body;
   try {
@@ -155,7 +145,6 @@ router.post('/reset-password', async (req, res) => {
     if (entry.expires < Date.now()) return res.status(400).json({ error: 'Code expired' });
     if (entry.code !== code) return res.status(400).json({ error: 'Invalid code' });
 
-    // ✅ Update password
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ error: 'User not found' });
 
@@ -163,9 +152,7 @@ router.post('/reset-password', async (req, res) => {
     user.password = hashed;
     await user.save();
 
-    // ✅ Clear code after use
     delete resetCodes[email];
-
     res.json({ message: 'Password reset successful' });
   } catch (err) {
     console.error('🔥 Reset password error:', err);
@@ -173,20 +160,15 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
-// ✅ Get all non-admin users
+// Get all non-admin users
 router.get('/', async (req, res) => {
-  console.log('📥 /api/users route hit'); // log when route is triggered
   try {
     const users = await User.find({ role: { $ne: 'admin' } });
-    console.log(`📊 Found ${users.length} users`);
     res.json(users);
   } catch (err) {
-    console.error('❌ Error fetching users:', err);
     res.status(500).json({ error: 'Server error while fetching users' });
   }
 });
-
-const { sendBlockNotification, sendUnblockNotification } = require('../mailer');
 
 // Block user
 router.put('/:id/block', async (req, res) => {
@@ -209,5 +191,46 @@ router.put('/:id/unblock', async (req, res) => {
     res.status(500).json({ error: 'Failed to unblock user' });
   }
 });
+
+// ---------------- ADMIN ROUTES ----------------
+
+// Get admin profile
+router.get('/admin/profile', verifyToken, isAdmin, async (req, res) => {
+  try {
+    const admin = await User.findById(req.user.id).select('-password');
+    if (!admin) return res.status(404).json({ error: 'Admin not found' });
+    res.json(admin);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch admin profile' });
+  }
+});
+
+// Update admin profile (extra details + image)
+router.put('/admin/profile', verifyToken, isAdmin, profileUpload.single('profileImage'), async (req, res) => {
+  try {
+    const updates = {
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+      address: req.body.address,
+      bio: req.body.bio   // ✅ changed from department → bio
+    };
+
+    if (req.file) {
+      updates.profileImage = `/profile_uploads/${req.file.filename}`;
+    }
+
+    const admin = await User.findByIdAndUpdate(
+      req.user.id,
+      updates,
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    res.json({ message: 'Profile updated successfully', admin });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update admin profile' });
+  }
+});
+
 
 module.exports = router;

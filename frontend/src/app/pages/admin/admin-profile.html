@@ -1,0 +1,56 @@
+<div class="admin-profile-container">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h3>Admin Dashboard</h3>
+    <ul>
+      <li><a routerLink="/admin">Home</a></li>
+      <li><a routerLink="/admin/listings">Manage Listings</a></li>
+    <li><a routerLink="/admin/bookings">Manage Bookings</a></li>
+      <li><a routerLink="/admin/users">Manage Users</a></li>
+      <li><a routerLink="/admin/feedback">Manage Feedback</a></li>
+      <li><a routerLink="/admin/profile">Profile</a></li>
+      <li><a (click)="logout()">Logout</a></li>
+    </ul>
+  </div>
+
+   <!-- Profile Content -->
+  <div class="profile-page" *ngIf="admin">
+    <h2>👤 Admin Profile</h2>
+
+    <div class="profile-card" *ngIf="!editMode">
+  <img *ngIf="admin.profileImage" [src]="'http://localhost:5000' + admin.profileImage" 
+       alt="Profile Image" class="profile-image" />
+  <p><strong>Name:</strong> {{ admin.name }}</p>
+  <p><strong>Email:</strong> {{ admin.email }}</p>
+  <p><strong>Phone:</strong> {{ admin.phone || 'N/A' }}</p>
+  <p><strong>Address:</strong> {{ admin.address || 'N/A' }}</p>
+  <p><strong>Bio:</strong> {{ admin.bio || 'N/A' }}</p>
+  <p><strong>Role:</strong> {{ admin.role }}</p>
+  <p><strong>Joined:</strong> {{ admin.createdAt | date:'medium' }}</p>
+  <button (click)="enableEdit()">Edit Profile</button>
+</div>
+
+<div class="profile-card" *ngIf="editMode">
+  <label>Name</label>
+  <input [(ngModel)]="updatedAdmin.name" type="text" />
+
+  <label>Email</label>
+  <input [(ngModel)]="updatedAdmin.email" type="email" />
+
+  <label>Phone</label>
+  <input [(ngModel)]="updatedAdmin.phone" type="text" />
+
+  <label>Address</label>
+  <input [(ngModel)]="updatedAdmin.address" type="text" />
+
+  <label>Bio</label>
+  <textarea [(ngModel)]="updatedAdmin.bio"></textarea>
+
+  <label>Profile Image</label>
+  <input type="file" (change)="onFileSelected($event)" />
+
+  <button (click)="saveProfile()">Save</button>
+</div>
+
+  </div>
+</div>
