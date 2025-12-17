@@ -59,7 +59,7 @@ login(): void {
         }
 
         localStorage.setItem('token', res.token);
-        localStorage.setItem('user', JSON.stringify({ _id: res.user._id, role: res.user.role }));
+        localStorage.setItem('user', JSON.stringify({ _id: res.user._id, role: res.user.role, name: res.user.name }));
         this.auth.login(res.token, res.user.role);
         alert('Login successful!');
         this.router.navigate([res.user.role === 'admin' ? '/admin' : '/dashboard']);

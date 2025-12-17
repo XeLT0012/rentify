@@ -19,11 +19,13 @@ selectedListing: any = null;
 currentImageIndex = 0;
 searchTerm = '';
 sortOption = 'priceLowToHigh';
+userName: string = '';
 
 constructor(private http: HttpClient, private auth: AuthService) {}
 
 ngOnInit() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
+  this.userName = user?.name || '';   // ✅ assign to class property
   const currentUserId = user._id; // ✅ exists now
 
   this.http.get<any[]>('http://localhost:5000/api/listings').subscribe(data => {

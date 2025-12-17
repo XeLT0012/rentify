@@ -15,10 +15,13 @@ export class MyBookingsComponent implements OnInit {
   bookings: any[] = [];
   loading = true;
   errorMessage = '';
+userName: string = '';
 
   constructor(private http: HttpClient, private auth: AuthService) {}
 
   ngOnInit(): void {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+  this.userName = user?.name || '';   // ✅ assign to class property
     const token = localStorage.getItem('token');
 
     this.http.get<any[]>('http://localhost:5000/api/bookings/my', {

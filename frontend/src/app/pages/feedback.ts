@@ -21,10 +21,13 @@ export class FeedbackComponent implements OnInit {
 
   selectedFile: File | null = null;
   myFeedbacks: any[] = [];
+userName: string = '';
 
   constructor(private http: HttpClient, private auth: AuthService) {}
 
   ngOnInit(): void {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+  this.userName = user?.name || '';   // ✅ assign to class property
     this.loadMyFeedbacks();
   }
 

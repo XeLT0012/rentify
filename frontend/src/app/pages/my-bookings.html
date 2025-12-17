@@ -2,6 +2,10 @@
   <!-- Sidebar -->
   <aside class="sidebar">
     <h3>Rentify</h3>
+    <!-- ✅ Show logged-in user's name -->
+  <div class="user-info" *ngIf="userName">
+  <p>Welcome {{ userName }}</p>
+</div>
     <ul>
       <li><a routerLink="/dashboard">🏠 Home</a></li>
       <li><a routerLink="/listings">📦 My Listings</a></li>

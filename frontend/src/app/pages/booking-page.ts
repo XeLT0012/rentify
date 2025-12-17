@@ -17,10 +17,13 @@ export class BookingPageComponent implements OnInit {
   startDate = '';
   endDate = '';
   notes = '';
+userName: string = '';
 
   constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router, private auth: AuthService) {}
 
   ngOnInit() {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+  this.userName = user?.name || '';   // ✅ assign to class property
     const id = this.route.snapshot.paramMap.get('id');
     this.http.get(`http://localhost:5000/api/listings/${id}`).subscribe(data => {
       this.listing = data;

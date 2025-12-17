@@ -43,7 +43,14 @@ certifications = '';
   // ✅ Trust & Safety
   terms = '';
 
+userName: string = '';
+
   constructor(private http: HttpClient, private router: Router, private auth: AuthService) {}
+
+ngOnInit(){
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+  this.userName = user?.name || '';   // ✅ assign to class property
+}
 
   handleFileInput(event: any) {
     this.imageFiles = Array.from(event.target.files);

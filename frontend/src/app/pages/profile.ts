@@ -16,10 +16,13 @@ export class ProfileComponent {
   user: any = {};
   editMode = false;
   profileImageFile: File | null = null;
+userName: string = '';
 
   constructor(private http: HttpClient, private auth: AuthService) {}
 
   ngOnInit() {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+  this.userName = user?.name || '';   // ✅ assign to class property
     const token = localStorage.getItem('token');
     this.http.get('http://localhost:5000/api/users/profile', {
       headers: { Authorization: `Bearer ${token}` }

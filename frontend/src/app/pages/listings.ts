@@ -17,6 +17,7 @@ export class ListingsComponent implements OnInit {
 expandedListing: any | null = null;
 expandedBookings: any[] = [];
 isEditMode: boolean = false;
+userName: string = '';
 
 constructor(
   private http: HttpClient,
@@ -25,6 +26,8 @@ constructor(
 ) {}
 
 ngOnInit(): void {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+  this.userName = user?.name || '';   // ✅ assign to class property
   const token = localStorage.getItem('token');
   this.http.get<any[]>('http://localhost:5000/api/listings/my-listings', {
     headers: { Authorization: `Bearer ${token}` }
