@@ -42,6 +42,8 @@
           <p><strong>Vendor Phone:</strong> {{ booking.listing.owner?.phone }}</p>
           <p><strong>Location:</strong> {{ booking.listing?.location }}</p>
           <p><strong>Contact Preference:</strong> {{ booking.listing?.contactPreference }}</p>
+          <button (click)="downloadInvoice(booking._id)">📥 Download Invoice</button>
+          <button (click)="viewInvoice(booking._id)">👀 View Invoice</button>
         </div>
 
         <ng-template #pendingBlock>

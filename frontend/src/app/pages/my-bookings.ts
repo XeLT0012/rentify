@@ -37,6 +37,44 @@ export class MyBookingsComponent implements OnInit {
     });
   }
 
+  downloadInvoice(bookingId: string) {
+  const token = localStorage.getItem('token');
+  this.http.get(`http://localhost:5000/api/bookings/${bookingId}/invoice`, {
+    headers: { Authorization: `Bearer ${token}` },
+    responseType: 'blob'
+  }).subscribe({
+    next: (res: Blob) => {
+      const url = window.URL.createObjectURL(res);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice-${bookingId}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    },
+    error: err => {
+      console.error('Failed to download invoice:', err);
+      alert('❌ Could not download invoice.');
+    }
+  });
+}
+
+viewInvoice(bookingId: string) {
+  const token = localStorage.getItem('token');
+  this.http.get(`http://localhost:5000/api/bookings/${bookingId}/invoice`, {
+    headers: { Authorization: `Bearer ${token}` },
+    responseType: 'blob'
+  }).subscribe({
+    next: (res: Blob) => {
+      const url = window.URL.createObjectURL(res);
+      window.open(url, '_blank'); // ✅ opens in new tab
+    },
+    error: err => {
+      console.error('Failed to view invoice:', err);
+      alert('❌ Could not open invoice.');
+    }
+  });
+}
+
   logout() {
     this.auth.logout();
     alert('You have been logged out.');

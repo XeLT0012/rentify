@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const PDFDocument = require('pdfkit');
 const Booking = require('../models/Booking');
 const { verifyToken } = require('../middleware/authMiddleware');
 const Listing = require('../models/listingModel');
@@ -86,6 +87,61 @@ router.get('/my', verifyToken, async (req, res) => {
   } catch (err) {
     console.error('🔥 Error fetching my bookings:', err);
     res.status(500).json({ error: 'Failed to fetch bookings' });
+  }
+});
+
+// 📌 Generate & download invoice
+router.get('/:id/invoice', verifyToken, async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id)
+      .populate({
+        path: 'listing',
+        select: 'title price location owner',
+        populate: { path: 'owner', select: 'name email phone' }
+      })
+      .populate('renter', 'name email');
+
+    if (!booking) return res.status(404).json({ error: 'Booking not found' });
+
+    // Create PDF
+    const doc = new PDFDocument();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=invoice-${booking._id}.pdf`);
+
+    doc.pipe(res);
+
+    // Header
+    doc.fontSize(20).text('Rentify Invoice', { align: 'center' });
+    doc.moveDown();
+
+    // Booking details
+    doc.fontSize(14).text(`Invoice ID: ${booking._id}`);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`);
+    doc.moveDown();
+
+    doc.text(`Renter: ${booking.renter.name} (${booking.renter.email})`);
+    doc.text(`Vendor: ${booking.listing.owner.name} (${booking.listing.owner.email})`);
+    doc.text(`Vendor Phone: ${booking.listing.owner.phone}`);
+    doc.moveDown();
+
+    doc.text(`Product Name: ${booking.listing.title}`);
+    doc.text(`Location: ${booking.listing.location}`);
+    doc.text(`Booking Dates: ${booking.startDate.toDateString()} - ${booking.endDate.toDateString()}`);
+    doc.text(`Status: ${booking.status}`);
+    doc.moveDown();
+
+    doc.text(`Total Price: Rs.${booking.totalPrice}`);
+    if (booking.paymentId) {
+      doc.text(`Payment ID: ${booking.paymentId}`);
+      doc.text(`Paid On: ${booking.createdAt.toDateString()}`);
+    } else {
+      doc.text(`Payment not completed yet.`);
+    }
+
+    doc.end();
+  } catch (err) {
+    console.error('🔥 Invoice generation error:', err);
+    res.status(500).json({ error: 'Failed to generate invoice' });
   }
 });
 
